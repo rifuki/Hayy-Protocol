@@ -11,7 +11,8 @@ import { BridgeDialog } from "@/components/common/BridgeDialog";
 import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import BorrowDrawer from "@/components/borrow/BorrowDrawer";
+import { SuiBorrowing } from "@/components/borrow/SuiBorrowing";
+import { BorrowDrawer } from "@/components/borrow/BorrowDrawer";
 import BorrowTable from "@/components/borrow/BorrowTable";
 import { Coins, TrendingUp, Info, AlertTriangle } from "lucide-react";
 
@@ -139,107 +140,21 @@ const Borrow = () => {
           <TabsContent value="sui" className="space-y-4">
             <div className="flex items-center gap-2 mb-4">
               <Badge variant="secondary">High Performance</Badge>
-              <Badge variant="outline">1 Asset</Badge>
+              <Badge variant="outline">sBTC Collateral</Badge>
             </div>
             
-            {/* Low Liquidity Warning */}
-            {isLowLiquidity('usdc') && (
-              <Alert className="border-red-200 bg-red-50">
-                <AlertTriangle className="h-4 w-4 text-red-600" />
-                <AlertDescription className="text-red-800">
-                  <strong>Low Liquidity:</strong> This pool has limited borrowing capacity. 
-                  Help <a href="/lend" className="underline font-semibold">bootstrap liquidity</a> to earn bonus rewards!
-                </AlertDescription>
-              </Alert>
-            )}
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* USDC Borrowing */}
-              <Card className={`hover:shadow-md transition-shadow ${isLowLiquidity('usdc') ? 'border-amber-200' : ''}`}>
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm">
-                        USDC
-                      </div>
-                      USD Coin (USDC)
-                    </span>
-                    <Badge variant="default">{TOKENS.USDC.apyBorrow || 2.5}% APR</Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="text-sm text-muted-foreground">
-                    Stable coin borrowing with competitive rates on Sui
-                  </div>
-                  <div className={`text-xs ${isLowLiquidity('usdc') ? 'text-amber-600' : 'text-muted-foreground'}`}>
-                    Available: {liquidityData.usdc.available.toLocaleString()} USDC
-                    {isLowLiquidity('usdc') && ' ⚠️ Low Liquidity'}
-                  </div>
-                  
-                  {isLowLiquidity('usdc') ? (
-                    <div className="space-y-2">
-                      <Button 
-                        variant="outline"
-                        onClick={() => {
-                          if (!wallet) { 
-                            toast({ title: "Please connect a wallet first" }); 
-                            return; 
-                          }
-                          setSelected('USDC');
-                        }}
-                        className="w-full"
-                        disabled={liquidityData.usdc.available < 100}
-                      >
-                        {liquidityData.usdc.available < 100 ? 'Insufficient Liquidity' : 'Limited Borrow'}
-                      </Button>
-                      <Button 
-                        onClick={() => window.open('/lend', '_blank')}
-                        className="w-full bg-green-600 hover:bg-green-700"
-                        size="sm"
-                      >
-                        🚀 Bootstrap Pool & Earn Rewards
-                      </Button>
-                    </div>
-                  ) : (
-                    <Button 
-                      onClick={() => {
-                        if (!wallet) { 
-                          toast({ title: "Please connect a wallet first" }); 
-                          return; 
-                        }
-                        setSelected('USDC');
-                      }}
-                      className="w-full"
-                    >
-                      Borrow USDC
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Empty slot for future assets */}
-              <Card className="hover:shadow-md transition-shadow opacity-60">
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-gray-400 flex items-center justify-center text-white font-bold text-sm">
-                        ?
-                      </div>
-                      More Assets Coming
-                    </span>
-                    <Badge variant="outline">Soon</Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="text-sm text-muted-foreground">
-                    Additional borrowing opportunities will be available soon
-                  </div>
-                  <Button disabled className="w-full">
-                    Coming Soon
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
+            <SuiBorrowing 
+              onCollateralDeposit={async (amount) => {
+                console.log('Depositing sBTC collateral:', amount);
+                // Here you would call the actual smart contract
+                // await suiContract.depositSbtcCollateral(amount);
+              }}
+              onBorrow={async (amount) => {
+                console.log('Borrowing USDC:', amount);
+                // Here you would call the actual smart contract  
+                // await suiContract.borrowUsdc(amount);
+              }}
+            />
           </TabsContent>
         </Tabs>
 

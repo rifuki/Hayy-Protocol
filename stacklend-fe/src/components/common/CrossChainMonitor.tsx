@@ -45,32 +45,32 @@ export const CrossChainMonitor: React.FC<CrossChainMonitorProps> = ({ className 
   const RELAYER_URL = 'http://localhost:3000';
 
   const fetchRelayerData = async () => {
-    setIsLoading(true);
-    try {
-      // Fetch health, stats, and events in parallel
-      const [healthRes, statsRes, eventsRes] = await Promise.all([
-        fetch(`${RELAYER_URL}/health`).then(r => r.json()).catch(() => null),
-        fetch(`${RELAYER_URL}/stats`).then(r => r.json()).catch(() => null),
-        fetch(`${RELAYER_URL}/events`).then(r => r.json()).catch(() => null)
-      ]);
-
-      if (healthRes) setHealth(healthRes);
-      if (statsRes) setStats(statsRes);
-      if (eventsRes?.events) setEvents(eventsRes.events);
-      
-      setLastUpdate(new Date());
-    } catch (error) {
-      console.error('Failed to fetch relayer data:', error);
-      setHealth({ 
-        ok: false, 
-        timestamp: new Date().toISOString(), 
-        isProcessing: false, 
-        uptime: 0,
-        error: 'Connection failed'
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    {/* setIsLoading(true); */}
+    {/* try { */}
+    {/*   // Fetch health, stats, and events in parallel */}
+    {/*   const [healthRes, statsRes, eventsRes] = await Promise.all([ */}
+    {/*     fetch(`${RELAYER_URL}/health`).then(r => r.json()).catch(() => null), */}
+    {/*     fetch(`${RELAYER_URL}/stats`).then(r => r.json()).catch(() => null), */}
+    {/*     fetch(`${RELAYER_URL}/events`).then(r => r.json()).catch(() => null) */}
+    {/*   ]); */}
+    {/**/}
+    {/*   if (healthRes) setHealth(healthRes); */}
+    {/*   if (statsRes) setStats(statsRes); */}
+    {/*   if (eventsRes?.events) setEvents(eventsRes.events); */}
+    {/**/}
+    {/*   setLastUpdate(new Date()); */}
+    {/* } catch (error) { */}
+    {/*   console.error('Failed to fetch relayer data:', error); */}
+    {/*   setHealth({  */}
+    {/*     ok: false,  */}
+    {/*     timestamp: new Date().toISOString(),  */}
+    {/*     isProcessing: false,  */}
+    {/*     uptime: 0, */}
+    {/*     error: 'Connection failed' */}
+    {/*   }); */}
+    {/* } finally { */}
+    {/*   setIsLoading(false); */}
+    {/* } */}
   };
 
   const triggerManualSync = async () => {
@@ -103,7 +103,7 @@ export const CrossChainMonitor: React.FC<CrossChainMonitorProps> = ({ className 
 
   // Auto-refresh every 10 seconds
   useEffect(() => {
-    fetchRelayerData();
+    {/* fetchRelayerData(); */}
     const interval = setInterval(fetchRelayerData, 10000);
     return () => clearInterval(interval);
   }, []);

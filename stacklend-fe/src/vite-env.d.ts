@@ -7,6 +7,8 @@ interface ImportMetaEnv {
   readonly VITE_ORIGINAL_PACKAGE_ID: string;
   readonly VITE_FAUCET_POOL_ID: string;
   readonly VITE_FAUCET_POOL_MODULE_NAME: string;
+  readonly VITE_USDC_LENDING_POOL_ID: string;
+  readonly VITE_USDC_LENDING_POOL_MODULE_NAME: string;
 
   readonly VITE_USDT_FAUCET_ID: string;
   readonly VITE_USDC_FAUCET_ID: string;

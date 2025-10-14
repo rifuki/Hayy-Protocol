@@ -20,13 +20,15 @@ import { networkConfig } from "./useNetworkConfig";
 
 const queryClient = new QueryClient();
 
+import "@mysten/dapp-kit/dist/index.css";
+
 const App = () => (
   <WagmiProvider config={wagmiConfig}>
     <QueryClientProvider client={queryClient}>
-      <RainbowKitProvider>
-        <StacksProvider>
-          <SuiClientProvider networks={networkConfig} defaultNetwork="testnet">
-            <WalletProvider autoConnect>
+      <SuiClientProvider networks={networkConfig} defaultNetwork="testnet">
+        <WalletProvider autoConnect>
+          <RainbowKitProvider>
+            <StacksProvider>
               <TooltipProvider>
                 <Toaster />
                 <Sonner />
@@ -43,10 +45,10 @@ const App = () => (
                   </Layout>
                 </BrowserRouter>
               </TooltipProvider>
-            </WalletProvider>
-          </SuiClientProvider>
-        </StacksProvider>
-      </RainbowKitProvider>
+            </StacksProvider>
+          </RainbowKitProvider>
+        </WalletProvider>
+      </SuiClientProvider>
     </QueryClientProvider>
   </WagmiProvider>
 );
