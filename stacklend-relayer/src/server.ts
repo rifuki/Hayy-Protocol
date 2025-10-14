@@ -4,7 +4,7 @@ import { env } from './config.js';
 import { loadState, saveState } from './state.js';
 import { fetchBorrowEventsSince, fetchDepositEventsSince, type DepositEvent } from './stacks.js';
 import { processBorrow } from './worker.js';
-import { checkRelayerHealth } from './evm.js';
+import { checkRelayerHealth } from './sui.js';
 
 const log = pino({ 
   level: 'info',

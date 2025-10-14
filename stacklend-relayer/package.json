@@ -17,17 +17,17 @@
     "lending",
     "cross-chain",
     "stacks",
-    "evm"
+    "sui"
   ],
   "author": "",
   "license": "MIT",
   "type": "module",
   "dependencies": {
+    "@mysten/sui": "^1.40.0",
     "cross-fetch": "^4.1.0",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "pino": "^9.8.0",
-    "viem": "^2.33.3",
     "zod": "^3.25.76"
   },
   "devDependencies": {
