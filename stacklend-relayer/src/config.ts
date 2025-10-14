@@ -6,15 +6,14 @@ const Env = z.object({
   STACKS_API_URL: z.string().url(),
   COLLATERAL_CONTRACT_ID: z.string(),
   STACKS_CONFIRMATIONS: z.string().default("1"),
-  SUI_RPC_URL: z.string().url().optional(),
-  RELAYER_PRIVATE_KEY: z.string(), // For Sui, this should be base64 encoded private key
-  BORROW_CONTROLLER_PACKAGE: z.string(), // Sui package address
-  LENDING_POOL_OBJECT: z.string(), // Sui object address
+  SCROLL_RPC_URL: z.string().url(),
+  RELAYER_PRIVATE_KEY: z.string().regex(/^0x[0-9a-fA-F]{64}$/),
+  BORROW_CONTROLLER: z.string().regex(/^0x[0-9a-fA-F]{40}$/),
   TOKEN_MAP: z.string().default("{}"),
   POLL_INTERVAL_MS: z.string().default("6000"),
   STATE_FILE: z.string().default("./state.json"),
 });
 
 export const env = Env.parse(process.env);
-export const tokenMap: Record<string, string> = JSON.parse(env.TOKEN_MAP);
+export const tokenMap: Record<string, `0x${string}`> = JSON.parse(env.TOKEN_MAP);
 

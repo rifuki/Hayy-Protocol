@@ -1,4 +1,4 @@
-import { processBorrowRequest } from './sui.js';
+import { borrow } from './evm.js';
 import { tokenMap } from './config.js';
 import type { BorrowEvent } from './stacks.js';
 import pino from 'pino';
@@ -31,9 +31,9 @@ export async function processBorrow(ev: BorrowEvent): Promise<string> {
     throw new Error(error);
   }
 
-  // Validate Sui recipient
+  // Validate EVM recipient
   if (!ev.evmRecipient) {
-    const error = 'Missing Sui recipient address';
+    const error = 'Missing EVM recipient address';
     log.error({ eventId: ev.id }, error);
     throw new Error(error);
   }
@@ -47,37 +47,28 @@ export async function processBorrow(ev: BorrowEvent): Promise<string> {
 
   try {
     log.info({ 
-      tokenSymbol: ev.tokenId,
+      tokenAddress: token,
       recipient: ev.evmRecipient,
       amount: ev.amount.toString()
-    }, 'Executing Sui borrow transaction');
+    }, 'Executing EVM borrow transaction');
 
     // Execute the borrow transaction
-    const result = await processBorrowRequest(
-      ev.evmRecipient, 
-      ev.tokenId, 
-      Number(ev.amount), 
-      ev.id
-    );
-    
-    if (!result.success) {
-      throw new Error(result.error || 'Borrow transaction failed');
-    }
+    const hash = await borrow(token, ev.evmRecipient, ev.amount);
     
     log.info({ 
       eventId: ev.id,
-      txHash: result.txHash,
-      tokenSymbol: ev.tokenId,
+      txHash: hash,
+      tokenAddress: token,
       recipient: ev.evmRecipient,
       amount: ev.amount.toString()
     }, 'Borrow transaction submitted successfully');
 
-    return result.txHash || '';
+    return hash;
   } catch (error: any) {
     log.error({ 
       eventId: ev.id,
       error: error.message,
-      tokenSymbol: ev.tokenId,
+      tokenAddress: token,
       recipient: ev.evmRecipient,
       amount: ev.amount.toString()
     }, 'Failed to execute borrow transaction');
