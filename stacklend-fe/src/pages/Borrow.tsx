@@ -290,7 +290,7 @@ const Borrow = () => {
             <Alert>
               <Info className="h-4 w-4" />
               <AlertDescription>
-                Stacks borrowing features are coming soon. You'll be able to borrow EVM tokens using STX and sBTC as collateral.
+                Stacks borrowing features are coming soon. You'll be able to borrow USDC using STX and sBTC as collateral.
               </AlertDescription>
             </Alert>
 
@@ -310,7 +310,7 @@ const Borrow = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="text-sm text-muted-foreground">
-                    Use STX and sBTC as collateral to borrow tokens on EVM networks
+                    Use STX and sBTC as collateral to borrow tokens across networks
                   </div>
                   <Button disabled className="w-full">
                     Coming Soon

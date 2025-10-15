@@ -1,9 +1,8 @@
 import React, { createContext, useContext, useMemo, useState } from "react";
 import { TokenSymbol, PRICES_USD } from "@/data/tokens";
 import { useStacks } from "@/hooks/use-stacks";
-import { useEVM } from "@/hooks/use-evm";
 
-export type WalletType = "stacks" | "evm";
+export type WalletType = "stacks" | "sui";
 
 export interface WalletInfo {
   type: WalletType;
@@ -19,7 +18,6 @@ export interface Position {
 interface AppStateContextValue {
   wallet?: WalletInfo;
   connectStacks: () => void;
-  connectEvm: () => void;
   disconnect: () => void;
 
   positions: Record<TokenSymbol, Position>;
@@ -49,7 +47,6 @@ function randomHex(len: number) {
 
 export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const stacksWallet = useStacks();
-  const evmWallet = useEVM();
   const [wallet, setWallet] = useState<WalletInfo | undefined>(undefined);
 
   // Update wallet state when Stacks wallet connection changes
@@ -60,15 +57,6 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       setWallet(undefined);
     }
   }, [stacksWallet.isConnected, stacksWallet.address, wallet?.type]);
-
-  // Update wallet state when EVM wallet connection changes
-  React.useEffect(() => {
-    if (evmWallet.isConnected && evmWallet.address) {
-      setWallet({ type: "evm", address: evmWallet.address });
-    } else if (!evmWallet.isConnected && wallet?.type === "evm") {
-      setWallet(undefined);
-    }
-  }, [evmWallet.isConnected, evmWallet.address, wallet?.type]);
 
   const [positions, setPositions] = useState<Record<TokenSymbol, Position>>({
     STX: { symbol: "STX", collateral: 0, borrowed: 0 },
@@ -83,15 +71,9 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     stacksWallet.connect();
   };
 
-  const connectEvm = () => {
-    evmWallet.connect();
-  };
-
   const disconnect = () => {
     if (wallet?.type === "stacks") {
       stacksWallet.disconnect();
-    } else if (wallet?.type === "evm") {
-      evmWallet.disconnect();
     }
     setWallet(undefined);
   };
@@ -146,7 +128,6 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const value: AppStateContextValue = {
     wallet,
     connectStacks,
-    connectEvm,
     disconnect,
     positions,
     addCollateral,

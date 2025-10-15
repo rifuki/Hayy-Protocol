@@ -1,24 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { useStacks } from '@/hooks/use-stacks';
-import { useEVM } from '@/hooks/use-evm';
-import { useStacksContractData } from '@/hooks/use-stacks-data';
-import { 
-  depositCollateral, 
-  withdrawCollateral, 
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useStacks } from "@/hooks/use-stacks";
+import { useStacksContractData } from "@/hooks/use-stacks-data";
+import {
+  depositCollateral,
+  withdrawCollateral,
   borrowCrossChain,
   signalRepayment,
   depositLending,
-  withdrawLending,
-  STACKLEND_CONTRACTS
-} from '@/lib/stacks-transactions';
-import { toast } from '@/hooks/use-toast';
-import { Loader2, Coins, ArrowRightLeft, Wallet, TrendingUp, AlertTriangle } from 'lucide-react';
+  STACKLEND_CONTRACTS,
+} from "@/lib/stacks-transactions";
+import { toast } from "@/hooks/use-toast";
+import { Loader2, Coins, ArrowRightLeft, Wallet } from "lucide-react";
 
 interface StacksLendingProps {
   className?: string;
@@ -26,16 +29,18 @@ interface StacksLendingProps {
 
 export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
   const { address, isConnected, connect, disconnect } = useStacks();
-  const { address: evmAddress, isConnected: evmConnected } = useEVM();
-  const { collateralData, lendingData, tokenMetadata, loading: dataLoading, refreshData } = useStacksContractData(address);
-  
-  const [collateralAmount, setCollateralAmount] = useState('');
-  const [withdrawAmount, setWithdrawAmount] = useState('');
-  const [borrowAmount, setBorrowAmount] = useState('');
-  const [repayAmount, setRepayAmount] = useState('');
-  const [lendAmount, setLendAmount] = useState('');
-  const [borrowToken, setBorrowToken] = useState<'USDC' | 'USDT' | 'WBTC'>('USDC');
-  const [repayToken, setRepayToken] = useState<'USDC' | 'USDT' | 'WBTC'>('USDC');
+
+  const [collateralAmount, setCollateralAmount] = useState("");
+  const [withdrawAmount, setWithdrawAmount] = useState("");
+  const [borrowAmount, setBorrowAmount] = useState("");
+  const [repayAmount, setRepayAmount] = useState("");
+  const [lendAmount, setLendAmount] = useState("");
+  const [borrowToken, setBorrowToken] = useState<"USDC" | "USDT" | "WBTC">(
+    "USDC",
+  );
+  const [repayToken, setRepayToken] = useState<"USDC" | "USDT" | "WBTC">(
+    "USDC",
+  );
   const [isDepositing, setIsDepositing] = useState(false);
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [isBorrowing, setIsBorrowing] = useState(false);
@@ -45,11 +50,11 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
   // Clear amounts when disconnected
   useEffect(() => {
     if (!isConnected) {
-      setCollateralAmount('');
-      setWithdrawAmount('');
-      setBorrowAmount('');
-      setRepayAmount('');
-      setLendAmount('');
+      setCollateralAmount("");
+      setWithdrawAmount("");
+      setBorrowAmount("");
+      setRepayAmount("");
+      setLendAmount("");
     }
   }, [isConnected]);
 
@@ -59,24 +64,24 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
   };
 
   const formatAPY = (apyBps: number) => {
-    return (apyBps / 100).toFixed(2) + '%';
+    return (apyBps / 100).toFixed(2) + "%";
   };
 
   const handleDepositCollateral = async () => {
-    if (!address || !evmAddress) {
-      toast({ 
-        title: "Wallet Connection Required", 
-        description: "Please connect both Stacks and EVM wallets",
-        variant: "destructive" 
+    if (!address) {
+      toast({
+        title: "Wallet Connection Required",
+        description: "Please connect your Stacks wallet",
+        variant: "destructive",
       });
       return;
     }
 
     if (!collateralAmount || parseFloat(collateralAmount) <= 0) {
-      toast({ 
-        title: "Invalid Amount", 
+      toast({
+        title: "Invalid Amount",
         description: "Please enter a valid collateral amount",
-        variant: "destructive" 
+        variant: "destructive",
       });
       return;
     }
@@ -84,38 +89,41 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
     setIsDepositing(true);
     try {
       // Convert STX to microSTX (1 STX = 1,000,000 microSTX)
-      const microSTX = Math.floor(parseFloat(collateralAmount) * 1_000_000).toString();
-      
+      const microSTX = Math.floor(
+        parseFloat(collateralAmount) * 1_000_000,
+      ).toString();
+
       await depositCollateral(
-        microSTX, 
+        microSTX,
         (data) => {
-          toast({ 
-            title: "Collateral Deposited Successfully!", 
+          toast({
+            title: "Collateral Deposited Successfully!",
             description: `${collateralAmount} STX deposited. Transaction: ${data.txId}`,
-            duration: 10000
+            duration: 10000,
           });
-          setCollateralAmount('');
+          setCollateralAmount("");
         },
         () => {
-          toast({ 
-            title: "Transaction Cancelled", 
+          toast({
+            title: "Transaction Cancelled",
             description: "Collateral deposit was cancelled by user",
-            variant: "default" 
+            variant: "default",
           });
-        }
+        },
       );
-      
-      toast({ 
-        title: "Transaction Submitted", 
-        description: "Collateral deposit transaction initiated. Please confirm in your wallet.",
-        duration: 5000
+
+      toast({
+        title: "Transaction Submitted",
+        description:
+          "Collateral deposit transaction initiated. Please confirm in your wallet.",
+        duration: 5000,
       });
     } catch (error) {
-      console.error('Collateral deposit error:', error);
-      toast({ 
-        title: "Deposit Failed", 
+      console.error("Collateral deposit error:", error);
+      toast({
+        title: "Deposit Failed",
         description: error.message || "Failed to deposit collateral",
-        variant: "destructive" 
+        variant: "destructive",
       });
     } finally {
       setIsDepositing(false);
@@ -124,57 +132,60 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
 
   const handleWithdrawCollateral = async () => {
     if (!address) {
-      toast({ 
-        title: "Wallet Not Connected", 
+      toast({
+        title: "Wallet Not Connected",
         description: "Please connect your Stacks wallet",
-        variant: "destructive" 
+        variant: "destructive",
       });
       return;
     }
 
     if (!withdrawAmount || parseFloat(withdrawAmount) <= 0) {
-      toast({ 
-        title: "Invalid Amount", 
+      toast({
+        title: "Invalid Amount",
         description: "Please enter a valid withdrawal amount",
-        variant: "destructive" 
+        variant: "destructive",
       });
       return;
     }
 
     setIsWithdrawing(true);
     try {
-      const microSTX = Math.floor(parseFloat(withdrawAmount) * 1_000_000).toString();
-      
+      const microSTX = Math.floor(
+        parseFloat(withdrawAmount) * 1_000_000,
+      ).toString();
+
       await withdrawCollateral(
-        microSTX, 
+        microSTX,
         (data) => {
-          toast({ 
-            title: "Collateral Withdrawn Successfully!", 
+          toast({
+            title: "Collateral Withdrawn Successfully!",
             description: `${withdrawAmount} STX withdrawn. Transaction: ${data.txId}`,
-            duration: 10000
+            duration: 10000,
           });
-          setWithdrawAmount('');
+          setWithdrawAmount("");
         },
         () => {
-          toast({ 
-            title: "Transaction Cancelled", 
+          toast({
+            title: "Transaction Cancelled",
             description: "Withdrawal was cancelled by user",
-            variant: "default" 
+            variant: "default",
           });
-        }
+        },
       );
-      
-      toast({ 
-        title: "Transaction Submitted", 
-        description: "Withdrawal transaction initiated. Please confirm in your wallet.",
-        duration: 5000
+
+      toast({
+        title: "Transaction Submitted",
+        description:
+          "Withdrawal transaction initiated. Please confirm in your wallet.",
+        duration: 5000,
       });
     } catch (error) {
-      console.error('Withdrawal error:', error);
-      toast({ 
-        title: "Withdrawal Failed", 
+      console.error("Withdrawal error:", error);
+      toast({
+        title: "Withdrawal Failed",
         description: error.message || "Failed to withdraw collateral",
-        variant: "destructive" 
+        variant: "destructive",
       });
     } finally {
       setIsWithdrawing(false);
@@ -182,20 +193,21 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
   };
 
   const handleCrossChainBorrow = async () => {
-    if (!address || !evmAddress) {
-      toast({ 
-        title: "Wallet Connection Required", 
-        description: "Please connect both Stacks and EVM wallets for cross-chain borrowing",
-        variant: "destructive" 
+    if (!address) {
+      toast({
+        title: "Wallet Connection Required",
+        description:
+          "Please connect your Stacks wallet for borrowing",
+        variant: "destructive",
       });
       return;
     }
 
     if (!borrowAmount || parseFloat(borrowAmount) <= 0) {
-      toast({ 
-        title: "Invalid Amount", 
+      toast({
+        title: "Invalid Amount",
         description: "Please enter a valid borrow amount",
-        variant: "destructive" 
+        variant: "destructive",
       });
       return;
     }
@@ -203,41 +215,44 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
     setIsBorrowing(true);
     try {
       // Convert amount based on token decimals
-      const decimals = borrowToken === 'WBTC' ? 8 : 6;
-      const tokenAmount = Math.floor(parseFloat(borrowAmount) * Math.pow(10, decimals)).toString();
-      
+      const decimals = borrowToken === "WBTC" ? 8 : 6;
+      const tokenAmount = Math.floor(
+        parseFloat(borrowAmount) * Math.pow(10, decimals),
+      ).toString();
+
       await borrowCrossChain(
-        borrowToken, 
-        tokenAmount, 
-        evmAddress,
+        borrowToken,
+        tokenAmount,
+        address, // Use Stacks address instead of EVM
         (data) => {
-          toast({ 
-            title: "Cross-Chain Borrow Initiated!", 
-            description: `Borrowing ${borrowAmount} ${borrowToken} to ${evmAddress.slice(0, 8)}...${evmAddress.slice(-6)}. Transaction: ${data.txId}`,
-            duration: 15000
+          toast({
+            title: "Borrow Initiated!",
+            description: `Borrowing ${borrowAmount} ${borrowToken}. Transaction: ${data.txId}`,
+            duration: 15000,
           });
-          setBorrowAmount('');
+          setBorrowAmount("");
         },
         () => {
-          toast({ 
-            title: "Transaction Cancelled", 
+          toast({
+            title: "Transaction Cancelled",
             description: "Cross-chain borrow was cancelled by user",
-            variant: "default" 
+            variant: "default",
           });
-        }
+        },
       );
-      
-      toast({ 
-        title: "Transaction Submitted", 
-        description: "Cross-chain borrow initiated. Tokens will be delivered to your EVM wallet after confirmation.",
-        duration: 8000
+
+      toast({
+        title: "Transaction Submitted",
+        description:
+          "Borrow transaction initiated. Please confirm in your wallet.",
+        duration: 8000,
       });
     } catch (error) {
-      console.error('Cross-chain borrow error:', error);
-      toast({ 
-        title: "Borrow Failed", 
+      console.error("Cross-chain borrow error:", error);
+      toast({
+        title: "Borrow Failed",
         description: error.message || "Failed to initiate cross-chain borrow",
-        variant: "destructive" 
+        variant: "destructive",
       });
     } finally {
       setIsBorrowing(false);
@@ -246,19 +261,19 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
 
   const handleRepayLoan = async () => {
     if (!address) {
-      toast({ 
-        title: "Wallet Connection Required", 
+      toast({
+        title: "Wallet Connection Required",
         description: "Please connect your Stacks wallet",
-        variant: "destructive" 
+        variant: "destructive",
       });
       return;
     }
 
     if (!repayAmount || parseFloat(repayAmount) <= 0) {
-      toast({ 
-        title: "Invalid Amount", 
+      toast({
+        title: "Invalid Amount",
         description: "Please enter a valid repay amount",
-        variant: "destructive" 
+        variant: "destructive",
       });
       return;
     }
@@ -266,42 +281,45 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
     setIsRepaying(true);
     try {
       // Convert amount based on token decimals
-      const decimals = repayToken === 'WBTC' ? 8 : 6;
-      const tokenAmount = Math.floor(parseFloat(repayAmount) * Math.pow(10, decimals)).toString();
-      
+      const decimals = repayToken === "WBTC" ? 8 : 6;
+      const tokenAmount = Math.floor(
+        parseFloat(repayAmount) * Math.pow(10, decimals),
+      ).toString();
+
       await signalRepayment(
-        repayToken, 
+        repayToken,
         tokenAmount,
         address,
         (data) => {
-          toast({ 
-            title: "Repayment Signaled Successfully!", 
+          toast({
+            title: "Repayment Signaled Successfully!",
             description: `${repayAmount} ${repayToken} repayment signaled. Transaction: ${data.txId}`,
-            duration: 10000
+            duration: 10000,
           });
-          setRepayAmount('');
+          setRepayAmount("");
           refreshData(); // Refresh contract data
         },
         () => {
-          toast({ 
-            title: "Transaction Cancelled", 
+          toast({
+            title: "Transaction Cancelled",
             description: "Loan repayment was cancelled by user",
-            variant: "default" 
+            variant: "default",
           });
-        }
+        },
       );
-      
-      toast({ 
-        title: "Transaction Submitted", 
-        description: "Loan repayment transaction initiated. Please confirm in your wallet.",
-        duration: 5000
+
+      toast({
+        title: "Transaction Submitted",
+        description:
+          "Loan repayment transaction initiated. Please confirm in your wallet.",
+        duration: 5000,
       });
     } catch (error) {
-      console.error('Loan repayment error:', error);
-      toast({ 
-        title: "Repayment Failed", 
+      console.error("Loan repayment error:", error);
+      toast({
+        title: "Repayment Failed",
         description: error.message || "Failed to signal loan repayment",
-        variant: "destructive" 
+        variant: "destructive",
       });
     } finally {
       setIsRepaying(false);
@@ -310,19 +328,19 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
 
   const handleDepositLending = async () => {
     if (!address) {
-      toast({ 
-        title: "Wallet Connection Required", 
+      toast({
+        title: "Wallet Connection Required",
         description: "Please connect your Stacks wallet",
-        variant: "destructive" 
+        variant: "destructive",
       });
       return;
     }
 
     if (!lendAmount || parseFloat(lendAmount) <= 0) {
-      toast({ 
-        title: "Invalid Amount", 
+      toast({
+        title: "Invalid Amount",
         description: "Please enter a valid lending amount",
-        variant: "destructive" 
+        variant: "destructive",
       });
       return;
     }
@@ -330,39 +348,42 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
     setIsLending(true);
     try {
       // Convert STX to microSTX (1 STX = 1,000,000 microSTX)
-      const microSTX = Math.floor(parseFloat(lendAmount) * 1_000_000).toString();
-      
+      const microSTX = Math.floor(
+        parseFloat(lendAmount) * 1_000_000,
+      ).toString();
+
       await depositLending(
         microSTX,
         (data) => {
-          toast({ 
-            title: "Lending Deposit Successful!", 
+          toast({
+            title: "Lending Deposit Successful!",
             description: `${lendAmount} STX deposited for lending. Transaction: ${data.txId}`,
-            duration: 10000
+            duration: 10000,
           });
-          setLendAmount('');
+          setLendAmount("");
           refreshData(); // Refresh contract data
         },
         () => {
-          toast({ 
-            title: "Transaction Cancelled", 
+          toast({
+            title: "Transaction Cancelled",
             description: "Lending deposit was cancelled by user",
-            variant: "default" 
+            variant: "default",
           });
-        }
+        },
       );
-      
-      toast({ 
-        title: "Transaction Submitted", 
-        description: "Lending deposit transaction initiated. Please confirm in your wallet.",
-        duration: 5000
+
+      toast({
+        title: "Transaction Submitted",
+        description:
+          "Lending deposit transaction initiated. Please confirm in your wallet.",
+        duration: 5000,
       });
     } catch (error) {
-      console.error('Lending deposit error:', error);
-      toast({ 
-        title: "Deposit Failed", 
+      console.error("Lending deposit error:", error);
+      toast({
+        title: "Deposit Failed",
         description: error.message || "Failed to deposit for lending",
-        variant: "destructive" 
+        variant: "destructive",
       });
     } finally {
       setIsLending(false);
@@ -382,7 +403,9 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
           <div className="text-center space-y-4">
             <Wallet className="h-12 w-12 mx-auto text-gray-400" />
             <div className="space-y-2">
-              <p className="text-sm text-gray-600">Connect your Stacks wallet to start lending</p>
+              <p className="text-sm text-gray-600">
+                Connect your Stacks wallet to start lending
+              </p>
               <p className="text-xs text-gray-500">
                 Deposit STX as collateral and borrow tokens cross-chain
               </p>
@@ -391,11 +414,17 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
               Connect Stacks Wallet
             </Button>
           </div>
-          
+
           <div className="border-t pt-4">
             <div className="text-xs text-gray-500 space-y-1">
-              <p><strong>Contract:</strong> {STACKLEND_CONTRACTS.COLLATERAL.address}</p>
-              <p><strong>Functions:</strong> deposit-collateral, withdraw-collateral, borrow</p>
+              <p>
+                <strong>Contract:</strong>{" "}
+                {STACKLEND_CONTRACTS.COLLATERAL.address}
+              </p>
+              <p>
+                <strong>Functions:</strong> deposit-collateral,
+                withdraw-collateral, borrow
+              </p>
             </div>
           </div>
         </CardContent>
@@ -418,27 +447,7 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
             <span>Stacks Wallet:</span>
             <span className="text-green-600 font-medium">Connected</span>
           </div>
-          <p className="text-xs text-gray-500 break-all">
-            {address}
-          </p>
-          {evmAddress && (
-            <>
-              <div className="flex items-center justify-between text-sm">
-                <span>EVM Wallet:</span>
-                <span className="text-green-600 font-medium">Connected</span>
-              </div>
-              <p className="text-xs text-gray-500 break-all">
-                {evmAddress}
-              </p>
-            </>
-          )}
-          {!evmConnected && (
-            <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
-              <p className="text-xs text-orange-700">
-                ⚠️ Connect EVM wallet to enable cross-chain borrowing
-              </p>
-            </div>
-          )}
+          <p className="text-xs text-gray-500 break-all">{address}</p>
         </div>
 
         {/* Deposit Collateral */}
@@ -455,10 +464,10 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
               onChange={(e) => setCollateralAmount(e.target.value)}
               disabled={isDepositing}
             />
-            <Button 
+            <Button
               onClick={handleDepositCollateral}
               className="w-full"
-              disabled={isDepositing || !evmConnected}
+              disabled={isDepositing}
             >
               {isDepositing ? (
                 <>
@@ -466,7 +475,7 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
                   Depositing...
                 </>
               ) : (
-                'Deposit Collateral'
+                "Deposit Collateral"
               )}
             </Button>
           </div>
@@ -486,7 +495,7 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
               onChange={(e) => setWithdrawAmount(e.target.value)}
               disabled={isWithdrawing}
             />
-            <Button 
+            <Button
               onClick={handleWithdrawCollateral}
               variant="outline"
               className="w-full"
@@ -498,7 +507,7 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
                   Withdrawing...
                 </>
               ) : (
-                'Withdraw Collateral'
+                "Withdraw Collateral"
               )}
             </Button>
           </div>
@@ -511,7 +520,12 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
             Cross-Chain Borrow
           </Label>
           <div className="space-y-3">
-            <Select value={borrowToken} onValueChange={(value: 'USDC' | 'USDT' | 'WBTC') => setBorrowToken(value)}>
+            <Select
+              value={borrowToken}
+              onValueChange={(value: "USDC" | "USDT" | "WBTC") =>
+                setBorrowToken(value)
+              }
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select token to borrow" />
               </SelectTrigger>
@@ -528,10 +542,10 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
               onChange={(e) => setBorrowAmount(e.target.value)}
               disabled={isBorrowing}
             />
-            <Button 
-              onClick={handleCrossChainBorrow} 
+            <Button
+              onClick={handleCrossChainBorrow}
               className="w-full"
-              disabled={isBorrowing || !evmConnected}
+              disabled={isBorrowing}
             >
               {isBorrowing ? (
                 <>
@@ -539,20 +553,20 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
                   Processing...
                 </>
               ) : (
-                `Borrow ${borrowToken} to EVM`
+                `Borrow ${borrowToken}`
               )}
             </Button>
-            {!evmConnected && (
-              <p className="text-xs text-orange-600">
-                Connect EVM wallet to receive borrowed tokens
-              </p>
-            )}
           </div>
         </div>
 
         {/* Actions */}
         <div className="border-t pt-4">
-          <Button onClick={disconnect} variant="ghost" size="sm" className="w-full">
+          <Button
+            onClick={disconnect}
+            variant="ghost"
+            size="sm"
+            className="w-full"
+          >
             Disconnect Stacks Wallet
           </Button>
         </div>
