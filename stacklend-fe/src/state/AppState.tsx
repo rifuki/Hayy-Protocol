@@ -73,6 +73,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [positions, setPositions] = useState<Record<TokenSymbol, Position>>({
     STX: { symbol: "STX", collateral: 0, borrowed: 0 },
     BTC: { symbol: "BTC", collateral: 0, borrowed: 0 },
+    sBTC: { symbol: "sBTC", collateral: 0, borrowed: 0 },
     ETH: { symbol: "ETH", collateral: 0, borrowed: 0 },
     USDC:{ symbol: "USDC", collateral: 0, borrowed: 0 },
     WBTC:{ symbol: "WBTC", collateral: 0, borrowed: 0 },
