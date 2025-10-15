@@ -1,0 +1,146 @@
+{
+  "lastStacksBlock": 3602770,
+  "processedEvents": {
+    "0xfb5b436f4c8d455c9056718cbc44b643dc8e1eba281313ce154939cd54c801a9:deposit": {
+      "txHash": "0xfb5b436f4c8d455c9056718cbc44b643dc8e1eba281313ce154939cd54c801a9",
+      "timestamp": 1760528724603,
+      "status": "failed",
+      "error": "Dry run failed, could not automatically determine a budget: MoveAbort(MoveLocation { module: ModuleId { address: ef40e62336591457b4ba6e88097b376385eee2379baf01263bb142ff6d28aed8, name: Identifier(\"borrow_controller\") }, function: 3, instruction: 39, function_name: Some(\"register_stacks_collateral\") }, 206) in command 0"
+    },
+    "0x15be2d5a17526ce5642d8c2a80d61131c591d95361d5c868942a6f3d80748103:deposit": {
+      "txHash": "0x15be2d5a17526ce5642d8c2a80d61131c591d95361d5c868942a6f3d80748103",
+      "timestamp": 1760528724926,
+      "status": "failed",
+      "error": "Dry run failed, could not automatically determine a budget: MoveAbort(MoveLocation { module: ModuleId { address: ef40e62336591457b4ba6e88097b376385eee2379baf01263bb142ff6d28aed8, name: Identifier(\"borrow_controller\") }, function: 3, instruction: 39, function_name: Some(\"register_stacks_collateral\") }, 206) in command 0"
+    },
+    "0xcc181292178bd7b7611ab9db9d9e43db4f37b39717f78991905bb332f110e8c1:deposit": {
+      "txHash": "0xcc181292178bd7b7611ab9db9d9e43db4f37b39717f78991905bb332f110e8c1",
+      "timestamp": 1760528725331,
+      "status": "failed",
+      "error": "Dry run failed, could not automatically determine a budget: MoveAbort(MoveLocation { module: ModuleId { address: ef40e62336591457b4ba6e88097b376385eee2379baf01263bb142ff6d28aed8, name: Identifier(\"borrow_controller\") }, function: 3, instruction: 39, function_name: Some(\"register_stacks_collateral\") }, 206) in command 0"
+    },
+    "0xa860faf1d62b560a2244588f15d0eaed0e5a8fc9816a9423c77ce98c03f0de79:deposit": {
+      "txHash": "0xa860faf1d62b560a2244588f15d0eaed0e5a8fc9816a9423c77ce98c03f0de79",
+      "timestamp": 1760528725862,
+      "status": "failed",
+      "error": "Dry run failed, could not automatically determine a budget: MoveAbort(MoveLocation { module: ModuleId { address: ef40e62336591457b4ba6e88097b376385eee2379baf01263bb142ff6d28aed8, name: Identifier(\"borrow_controller\") }, function: 3, instruction: 39, function_name: Some(\"register_stacks_collateral\") }, 206) in command 0"
+    },
+    "0x9328593fdea8bb250265f59dbcde9d75e3e7bd9d8a281e65221c1bfba9624108:deposit": {
+      "txHash": "0x9328593fdea8bb250265f59dbcde9d75e3e7bd9d8a281e65221c1bfba9624108",
+      "timestamp": 1760528811837,
+      "status": "failed",
+      "error": "Dry run failed, could not automatically determine a budget: MoveAbort(MoveLocation { module: ModuleId { address: ef40e62336591457b4ba6e88097b376385eee2379baf01263bb142ff6d28aed8, name: Identifier(\"borrow_controller\") }, function: 3, instruction: 39, function_name: Some(\"register_stacks_collateral\") }, 206) in command 0"
+    },
+    "0x5a9df892556e8583649ad3b6dc8ebe7d2a0badc119aaa6ca632bbafa6b590954:deposit": {
+      "txHash": "0x5a9df892556e8583649ad3b6dc8ebe7d2a0badc119aaa6ca632bbafa6b590954",
+      "timestamp": 1760528919173,
+      "status": "failed",
+      "error": "Dry run failed, could not automatically determine a budget: MoveAbort(MoveLocation { module: ModuleId { address: ef40e62336591457b4ba6e88097b376385eee2379baf01263bb142ff6d28aed8, name: Identifier(\"borrow_controller\") }, function: 3, instruction: 39, function_name: Some(\"register_stacks_collateral\") }, 206) in command 0"
+    },
+    "0x2f1a3dc9be5396013347b484c22f53aa4969e0dab5a4c79a3d88203d4958a04f:deposit": {
+      "txHash": "0x2f1a3dc9be5396013347b484c22f53aa4969e0dab5a4c79a3d88203d4958a04f",
+      "suiTxDigest": "5g1NBeY8FrfJZKLMQM5TdhCaV63wWToAyhwhuNSSp8vr",
+      "timestamp": 1760529264772,
+      "status": "success"
+    },
+    "0x893dd565029b25ded5c7b506edbb4ba8aeda6abe59e6acff3fbedb08c83ef23b:deposit": {
+      "txHash": "0x893dd565029b25ded5c7b506edbb4ba8aeda6abe59e6acff3fbedb08c83ef23b",
+      "suiTxDigest": "4tgG77uXsXKLNSnKdDy7xKGdsHpes6hoApe177DCtJUw",
+      "timestamp": 1760529893485,
+      "status": "success"
+    },
+    "0xf422a77fc10d125622dce50d56743cd8fc09b3f7006a19b5264e93b7e6d3cdc5:deposit": {
+      "txHash": "0xf422a77fc10d125622dce50d56743cd8fc09b3f7006a19b5264e93b7e6d3cdc5",
+      "suiTxDigest": "2pRG5huFaoGzpCtXzJeBL1yEfK2YS6jEPy7wKCscxnzP",
+      "timestamp": 1760534715602,
+      "status": "success"
+    },
+    "0x6d335a0487177baa032f76fab42fc97a469fdd344b763113333ef68e713ef40e:deposit": {
+      "txHash": "0x6d335a0487177baa032f76fab42fc97a469fdd344b763113333ef68e713ef40e",
+      "suiTxDigest": "6Nh1HsYWRDncswc8hJGiAquC6Su53fWnCJsbBqSF77rV",
+      "timestamp": 1760535577181,
+      "status": "success"
+    },
+    "0x1ef0aa16f4b844efe97114cb2e735b794c00352245db684e1cd0ee8cc635f48f:deposit": {
+      "txHash": "0x1ef0aa16f4b844efe97114cb2e735b794c00352245db684e1cd0ee8cc635f48f",
+      "suiTxDigest": "HDeMJdheRufDNzBpAxq7G5xXyYdBTNZWZn5TcAjYaXuh",
+      "timestamp": 1760535602543,
+      "status": "success"
+    },
+    "0x8454efe54336816fc2f5d8699c9159d4456e1026ac56d79b925649e525b77bf9:deposit": {
+      "txHash": "0x8454efe54336816fc2f5d8699c9159d4456e1026ac56d79b925649e525b77bf9",
+      "suiTxDigest": "C5UFFJhkTXodn8RTNp7huCMd52xvGZzyUdjMRFhCPcJb",
+      "timestamp": 1760540776712,
+      "status": "success"
+    },
+    "0xc4758649ffce7cb0781c391a0fcdb340e94d1f2939b3c358c3b184d865cdcb0d:deposit": {
+      "txHash": "0xc4758649ffce7cb0781c391a0fcdb340e94d1f2939b3c358c3b184d865cdcb0d",
+      "suiTxDigest": "AsnH3X7XoKwAR5Y6KHLUE1kfAmbyiqEvg7n49Uqaxktr",
+      "timestamp": 1760540934882,
+      "status": "success"
+    },
+    "0xdda2687e3c089640acb4a2255c18550ef8ec429dd1f7206b1512a95d3d342963:deposit": {
+      "txHash": "0xdda2687e3c089640acb4a2255c18550ef8ec429dd1f7206b1512a95d3d342963",
+      "suiTxDigest": "5Ktj5RAmhRpxifGcZdtLwwpesTESLBWTzbiwBgxY3Xoz",
+      "timestamp": 1760540937970,
+      "status": "success"
+    },
+    "0xa4b397d15064423208efe239122d350340018c449c2926ae719e830195b27f22:deposit": {
+      "txHash": "0xa4b397d15064423208efe239122d350340018c449c2926ae719e830195b27f22",
+      "suiTxDigest": "8NthVvEaVcZgSpa8P7BuxRUg6B9ViVcAoLAyEfP5fVmy",
+      "timestamp": 1760540994784,
+      "status": "success"
+    },
+    "0x90ada7119a2f4842a306b983592048ff3450418f2598b7f09d14d15bf9f069a0:deposit": {
+      "txHash": "0x90ada7119a2f4842a306b983592048ff3450418f2598b7f09d14d15bf9f069a0",
+      "suiTxDigest": "4UoaRWFq8BSQ8vuQnL4qwg3vA4uAegFifDtpHtMNDDEs",
+      "timestamp": 1760541040516,
+      "status": "success"
+    },
+    "0x205a7d1169378c7aa4fa7c0558fe5ebf73ea2bc653d6c1a9d0758afa9f87b260:deposit": {
+      "txHash": "0x205a7d1169378c7aa4fa7c0558fe5ebf73ea2bc653d6c1a9d0758afa9f87b260",
+      "suiTxDigest": "rEbEr9mLcpqXuFyWDErh7zFnqt6dLBkxfm2qrjCmJ1V",
+      "timestamp": 1760541667948,
+      "status": "success"
+    },
+    "0x2f2a594c2708d67032d6637d3dd3170ae4c4f1a18e50e79ae289d32aa5831412:deposit": {
+      "txHash": "0x2f2a594c2708d67032d6637d3dd3170ae4c4f1a18e50e79ae289d32aa5831412",
+      "suiTxDigest": "C8URy8L6LJsRCFuejMokvo9b9RtQRvFUTkQ9XJ5S6aaA",
+      "timestamp": 1760541672148,
+      "status": "success"
+    },
+    "0xf25e7fbccdaa367b05d41326f9bd0ff1eadf5182e4d642b287b3fedcf141fd00:deposit": {
+      "txHash": "0xf25e7fbccdaa367b05d41326f9bd0ff1eadf5182e4d642b287b3fedcf141fd00",
+      "suiTxDigest": "BynxoxqFf4QjgrTnK5NnVCLrCfy6c2GW9D6U19ngFeEt",
+      "timestamp": 1760541678286,
+      "status": "success"
+    },
+    "0x064c91f55e3ee441413a3b1a37ffb02ffc6bba0449a2a68ba15aef1965af19cc:deposit": {
+      "txHash": "0x064c91f55e3ee441413a3b1a37ffb02ffc6bba0449a2a68ba15aef1965af19cc",
+      "suiTxDigest": "HHTHy3VR4na9UKXxKYCjpb6ZzQdGnxsLAs9nvtFU4oUu",
+      "timestamp": 1760541778184,
+      "status": "success"
+    },
+    "0xe0e44cc3662d8562907779abc6e43fda0f5a6836847e48df11c1396aa34d5e4a:deposit": {
+      "txHash": "0xe0e44cc3662d8562907779abc6e43fda0f5a6836847e48df11c1396aa34d5e4a",
+      "suiTxDigest": "7UV7afCn4GHrLyz27YjHwBsHr5UXpA7mbvWHf154k6fX",
+      "timestamp": 1760546389558,
+      "status": "success"
+    },
+    "0xddcc3e6bc024700fd3ef8e70091a6a17fa6cf9713fdabfeff20bcd1aedf64163:deposit": {
+      "txHash": "0xddcc3e6bc024700fd3ef8e70091a6a17fa6cf9713fdabfeff20bcd1aedf64163",
+      "suiTxDigest": "E7UuKurqL1etz969JE5BrgAyv4DKxpC9BoL4BU1CFxrj",
+      "timestamp": 1760546627475,
+      "status": "success"
+    }
+  },
+  "addressMappings": {
+    "ST1WVZNYKMK1MS2V2B728ZWJ2C76TAN49C6HSY7JF": "0x4debb63a2d35913b8bc544c074d877706c67cdb00c6d9b685f1702e3e978c600",
+    "STTRAP4N32293HKRHC6VWNQA9ANQF2AXQTB9YN8G": "0x680a261a842df3743248432c932ce32c46c58a2f8d9f1ae0e917d55aed4e28c6"
+  },
+  "priceCache": {
+    "stxUsd": 0.5,
+    "sbtcUsd": 65000,
+    "lastUpdate": 1760550971891
+  }
+}

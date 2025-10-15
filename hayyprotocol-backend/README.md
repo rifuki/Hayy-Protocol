@@ -1,254 +1,283 @@
-# StackLend Relayer
+# StackLend Relayer (Stacks ↔ Sui)
 
-A cross-chain relayer service that bridges Stacks and EVM blockchains for the StackLend lending protocol.
+Cross-chain relayer for StackLend protocol that syncs STX collateral events between Stacks and Sui.
 
-## 🏗️ Architecture
-
-The relayer monitors Stacks blockchain events and executes corresponding transactions on EVM chains:
+## Architecture
 
 ```
-Stacks Events → Relayer → EVM Transactions
-     ↑                        ↓
-STX Collateral          Token Minting/Burning
+┌──────────────────┐           ┌──────────────────┐
+│  Stacks Chain    │           │   Sui Chain      │
+│                  │           │                  │
+│  collateral-v2   │  Relayer  │  borrow_registry │
+│  - deposit       │◄─────────►│  - register      │
+│  - withdraw      │           │  - unlock        │
+└──────────────────┘           └──────────────────┘
 ```
 
-## 🚀 Quick Start
+## Features
 
-### Prerequisites
+- ✅ Monitor Stacks `collateral-deposited` events
+- ✅ Register STX collateral on Sui automatically
+- ✅ Monitor `withdraw-requested` events
+- ✅ Verify debt on Sui before unlocking
+- ✅ Call `admin-unlock-collateral` on Stacks
+- ✅ Price feed integration (CoinGecko)
+- ✅ Idempotent event processing
+- ✅ State persistence
 
-- Node.js 18+
-- A funded EVM wallet (for gas fees)
-- Access to Stacks API and EVM RPC
+## Setup
 
-### Installation
+### 1. Install Dependencies
 
 ```bash
-# Install dependencies
+cd stacklend-relayer
 npm install
+```
 
-# Copy environment template
+### 2. Configure Environment
+
+Copy `.env.example` to `.env` and fill in:
+
+```bash
 cp .env.example .env
-
-# Edit configuration
-nano .env
 ```
 
-### Configuration
+**Required variables:**
+- `STACKS_COLLATERAL_CONTRACT` - Your deployed contract ID (e.g., `ST...collateral-v2`)
+- `SUI_BORROW_REGISTRY_ID` - Your Sui borrow registry object ID
+- `SUI_PACKAGE_ID` - Your Sui package ID
+- `RELAYER_STACKS_PRIVATE_KEY` - Stacks admin private key (hex)
+- `RELAYER_SUI_PRIVATE_KEY` - Sui relayer private key (base64)
 
-Update `.env` with your settings:
+### 3. Initialize Admin on Stacks
+
+Before running relayer, initialize the admin:
 
 ```bash
-# Server
-PORT=8080
-
-# Stacks Configuration
-STACKS_API_URL=https://api.hiro.so
-COLLATERAL_CONTRACT_ID=YOUR_STACKS_CONTRACT_ID
-STACKS_CONFIRMATIONS=1
-
-# EVM Configuration  
-SCROLL_RPC_URL=https://sepolia-rpc.scroll.io/
-RELAYER_PRIVATE_KEY=0x...your-private-key
-BORROW_CONTROLLER=0x55fc7d4588b5d31e2d7e6b59079e00b0ed938821
-
-# Token Mapping (Stacks ID → EVM Address)
-TOKEN_MAP={"USDC":"0x7456733cb8d301cbee45c89e0aeb46edda511e7e","USDT":"0x217a6912a3a44dabb07851909c52557ff6d1a147","WBTC":"0xaf23e637893ee7ec080be5c7760152919261a2b9"}
-
-# Polling Settings
-POLL_INTERVAL_MS=6000
-STATE_FILE=./state.json
+clarinet console
 ```
 
-### Running the Relayer
+```clarity
+(contract-call? .collateral-v2 init-admin)
+```
 
+### 4. Run Relayer
+
+**Development:**
 ```bash
-# Development mode (with hot reload)
 npm run dev
+```
 
-# Production build and run
+**Production:**
+```bash
 npm run build
 npm start
 ```
 
-## 📊 API Endpoints
+## How It Works
 
-### Health Check
-```bash
-curl http://localhost:8080/health
+### 1. Deposit Flow
+
+```
+User deposits STX on Stacks
+       ↓
+Relayer detects `collateral-deposited` event
+       ↓
+Relayer fetches STX price from CoinGecko
+       ↓
+Relayer calls `register_stacks_collateral()` on Sui
+       ↓
+User can now borrow USDC on Sui
 ```
 
-### Statistics
-```bash
-curl http://localhost:8080/stats
+### 2. Withdrawal Flow
+
+```
+User requests withdrawal on Stacks
+       ↓
+Relayer detects `withdraw-requested` event
+       ↓
+Relayer checks debt on Sui via `get_position()`
+       ↓
+If debt = 0:
+  Relayer calls `admin-unlock-collateral()` on Stacks
+  STX sent back to user
+If debt > 0:
+  Request ignored (user must repay first)
 ```
 
-### Recent Events
-```bash
-curl http://localhost:8080/events
-```
+## State Management
 
-### Manual Sync Trigger
-```bash
-curl -X POST http://localhost:8080/trigger-sync
-```
+Relayer maintains state in `relayer-state.json`:
 
-## 🔧 Management Scripts
-
-```bash
-# Check relayer health
-npm run health
-
-# View statistics
-npm run stats
-
-# Trigger manual sync
-npm run trigger
-```
-
-## 🛠️ How It Works
-
-### Event Processing Flow
-
-1. **Monitor Stacks**: Continuously polls Stacks API for new borrow events
-2. **Parse Events**: Extracts borrow request details from contract print statements
-3. **Validate**: Checks token mappings, amounts, and recipient addresses
-4. **Execute EVM**: Calls BorrowController to mint tokens on EVM chain
-5. **Track State**: Maintains processed events to prevent duplicates
-
-### Event Format
-
-The relayer processes events with this structure:
-```typescript
+```json
 {
-  id: string;            // Unique event ID (txid:index)
-  txid: string;          // Stacks transaction hash
-  height: number;        // Block height
-  user: string;          // Stacks user address
-  tokenId: string;       // Token identifier (USDC, USDT, WBTC)
-  amount: bigint;        // Amount to borrow
-  evmRecipient: string;  // EVM recipient address
+  "lastStacksBlock": 12345,
+  "processedEvents": {
+    "tx123:deposit": {
+      "txHash": "tx123",
+      "suiTxDigest": "digest456",
+      "timestamp": 1234567890,
+      "status": "success"
+    }
+  },
+  "priceCache": {
+    "stxUsd": 0.50,
+    "sbtcUsd": 65000,
+    "lastUpdate": 1234567890
+  }
 }
 ```
 
-### State Management
+## Address Mapping (Important!)
 
-- **Persistence**: Events tracked in JSON file (`state.json`)
-- **Idempotency**: Prevents duplicate processing
-- **Height Tracking**: Remembers last processed block
+**Current Implementation:** The relayer uses a placeholder address mapping.
 
-## 🔐 Security Features
+**For Production:** You need to implement proper Stacks ↔ Sui address mapping:
 
-- **Role-based Access**: Only authorized relayer can call contract
-- **Token Validation**: Checks if tokens are whitelisted
-- **Amount Validation**: Prevents zero/negative amounts
-- **Gas Management**: Estimates gas with safety buffer
-- **Balance Checks**: Ensures sufficient relayer balance
+1. **Option A:** User-registered mapping
+   - Frontend allows users to link their Stacks and Sui addresses
+   - Store in database (PostgreSQL/MongoDB)
+   - Relayer queries database for address mapping
 
-## 📈 Monitoring
+2. **Option B:** Derived addressing
+   - Use deterministic derivation from Stacks address
+   - Less flexible but no database needed
 
-### Health Indicators
+3. **Option C:** Smart contract mapping
+   - Store mappings on-chain (either Stacks or Sui)
+   - Relayer queries contract for mapping
 
-- **Relayer Balance**: ETH balance for gas fees
-- **Authorization**: Confirms relayer is authorized on contract
-- **Block Sync**: Latest processed block height
-- **Event Processing**: Recent event processing statistics
+**TODO:** Update `mapStacksAddressToSui()` in `src/relayer.ts`
 
-### Logs
+## Monitoring
 
-The relayer provides structured logging:
-- Info: Normal operations and successful transactions
-- Error: Failed transactions and system errors
-- Debug: Detailed event processing information
+**Logs:**
+- Level: `info` (configurable via `LOG_LEVEL`)
+- Format: JSON (structured via Pino)
 
-## 🚨 Error Handling
+**Key metrics to monitor:**
+- Events processed per minute
+- Failed events (check `status: "failed"` in state file)
+- Price feed updates
+- Sui balance (for gas)
+- Stacks balance (for admin operations)
 
-Common error scenarios and solutions:
+## Error Handling
 
-### Insufficient Balance
-```
-Error: Insufficient relayer balance: 0.05 ETH (minimum: 0.1 ETH)
-```
-**Solution**: Fund the relayer wallet with more ETH
+Relayer handles errors gracefully:
 
-### Unauthorized Relayer
-```
-Error: Relayer address not authorized on contract
-```
-**Solution**: Call `setRelayer()` on BorrowController with correct address
+- **Price fetch fails:** Uses fallback prices ($0.50 STX, $65k BTC)
+- **Sui tx fails:** Marks event as failed, continues with next event
+- **Stacks unlock fails:** Logs error, retries on next poll
+- **Event already processed:** Skips (idempotent)
 
-### Token Not Allowed
-```
-Error: Token 0x... is not allowed for borrowing
-```
-**Solution**: Call `setAllowedToken()` on BorrowController to whitelist token
+## Deployment
 
-### Invalid Recipient
-```
-Error: Missing EVM recipient address
-```
-**Solution**: Ensure Stacks contract emits valid EVM addresses
-
-## 🔄 Cross-Chain Flow
-
-### Borrowing Process
-
-1. User supplies STX collateral on Stacks
-2. User calls borrow function with:
-   - Token ID (USDC, USDT, WBTC)
-   - Amount to borrow
-   - EVM recipient address
-3. Stacks contract emits borrow event
-4. Relayer detects event after confirmations
-5. Relayer calls EVM BorrowController
-6. Tokens minted to user's EVM address
-
-### Repayment Process
-
-1. User approves ERC20 tokens for BorrowController
-2. Relayer (or user) calls repay function
-3. Tokens burned from user's balance
-4. Collateral available for withdrawal on Stacks
-
-## 🛡️ Production Considerations
-
-### Security
-- Use hardware wallet or secure key management
-- Run relayer on secure infrastructure
-- Monitor relayer balance and activity
-- Set up alerting for failures
-
-### Reliability
-- Use redundant RPC endpoints
-- Implement circuit breakers
-- Set up automated restarts
-- Monitor event processing delays
-
-### Scaling
-- Consider multiple relayer instances
-- Implement event queuing for high volume
-- Use database instead of JSON for persistence
-- Add metrics and monitoring dashboards
-
-## 📝 Development
-
-### Adding New Tokens
-
-1. Deploy ERC20 token on EVM chain
-2. Whitelist token on BorrowController: `setAllowedToken(tokenAddress, true)`
-3. Update `TOKEN_MAP` in environment variables
-4. Restart relayer
-
-### Testing
+### Option 1: PM2
 
 ```bash
-# Unit tests (add them!)
-npm test
-
-# Integration testing
-npm run dev
-curl -X POST http://localhost:8080/trigger-sync
+npm install -g pm2
+pm2 start npm --name "stacklend-relayer" -- start
+pm2 save
+pm2 startup
 ```
 
-## 📄 License
+### Option 2: systemd
 
-MIT License - see LICENSE file for details.
+Create `/etc/systemd/system/stacklend-relayer.service`:
+
+```ini
+[Unit]
+Description=StackLend Relayer
+After=network.target
+
+[Service]
+Type=simple
+User=your-user
+WorkingDirectory=/path/to/stacklend-relayer
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/node dist/index.js
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Then:
+```bash
+sudo systemctl enable stacklend-relayer
+sudo systemctl start stacklend-relayer
+```
+
+### Option 3: Docker
+
+```dockerfile
+FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --production
+COPY . .
+RUN npm run build
+CMD ["node", "dist/index.js"]
+```
+
+```bash
+docker build -t stacklend-relayer .
+docker run -d --name relayer --env-file .env stacklend-relayer
+```
+
+## Security
+
+**Critical Security Notes:**
+
+1. **Private Keys:**
+   - Store securely (use secrets manager in production)
+   - Never commit `.env` to git
+   - Rotate keys regularly
+
+2. **Admin Key (Stacks):**
+   - Controls `admin-unlock-collateral`
+   - If compromised, attacker can unlock all collateral
+   - Consider multi-sig for production
+
+3. **Relayer Key (Sui):**
+   - Needs gas for transactions
+   - Keep balance topped up but not excessive
+
+4. **Rate Limiting:**
+   - CoinGecko API: 10-50 calls/minute (free tier)
+   - Hiro API: ~100 calls/minute
+   - Implement exponential backoff if needed
+
+## Future Improvements
+
+- [ ] Add address mapping database
+- [ ] Implement retry logic with exponential backoff
+- [ ] Add Prometheus metrics endpoint
+- [ ] Implement health check API
+- [ ] Add alerting (email/Slack on failures)
+- [ ] Support multiple relayers (leader election)
+- [ ] Add ZK proof verification (for trustless relaying)
+- [ ] Implement fee management (auto-refill Sui gas)
+
+## Troubleshooting
+
+**No events detected:**
+- Check `STACKS_COLLATERAL_CONTRACT` is correct
+- Verify contract is deployed on testnet
+- Check `lastStacksBlock` in state file (may be too far ahead)
+
+**Sui transactions failing:**
+- Check Sui relayer balance: `sui client gas`
+- Verify `SUI_BORROW_REGISTRY_ID` is correct
+- Check Sui RPC URL is accessible
+
+**Price feed errors:**
+- Check CoinGecko API key (if using pro)
+- Fallback prices will be used automatically
+
+## License
+
+MIT

@@ -97,6 +97,12 @@ public struct EventCollateralDeposited has copy, drop {
     amount: u64,
 }
 
+public struct EventCollateralWithdrawn has copy, drop {
+    borrower: address,
+    collateral_type: u8,
+    amount: u64,
+}
+
 public struct EventBorrowed has copy, drop {
     borrower: address,
     usdc_amount: u64,
@@ -287,6 +293,49 @@ public entry fun register_stacks_collateral(
     event::emit(EventCollateralDeposited {
         borrower,
         collateral_type,
+        amount,
+    });
+}
+
+// Withdraw STX collateral from Stacks (called by relayer)
+#[allow(lint(public_entry))]
+public entry fun withdraw_stx_collateral(
+    registry: &mut BorrowRegistry,
+    borrower: address,
+    amount: u64,
+    ctx: &mut TxContext
+) {
+    // In production, verify this is called by authorized relayer
+    assert!(ctx.sender() == registry.admin, E_NOT_AUTHORIZED);
+    assert!(amount > 0, E_INVALID_AMOUNT);
+
+    // Check if position exists
+    assert!(dynamic_field::exists_(&registry.id, borrower), E_POSITION_NOT_FOUND);
+    
+    let position: &mut BorrowPosition = dynamic_field::borrow_mut(&mut registry.id, borrower);
+    
+    // Check if user has enough STX collateral
+    assert!(position.stx_collateral_stacks >= amount, E_INSUFFICIENT_COLLATERAL);
+    
+    // Calculate if withdrawal would leave position healthy
+    let remaining_stx = position.stx_collateral_stacks - amount;
+    let remaining_stx_value = (remaining_stx as u64) * registry.stx_price_usd / 1_000000;
+    let remaining_sbtc_sui_value = (position.sbtc_collateral_sui as u64) * registry.sbtc_price_usd / 100_000000;
+    let remaining_sbtc_stacks_value = (position.sbtc_collateral_stacks as u64) * registry.sbtc_price_usd / 100_000000;
+    
+    let total_remaining_collateral = remaining_stx_value + remaining_sbtc_sui_value + remaining_sbtc_stacks_value;
+    let max_borrow_after_withdrawal = total_remaining_collateral * LTV_STX / 10000;
+    let current_debt = position.usdc_borrowed;
+    
+    // Ensure position remains healthy after withdrawal
+    assert!(current_debt <= max_borrow_after_withdrawal, E_INSUFFICIENT_COLLATERAL);
+    
+    // Update position
+    position.stx_collateral_stacks = remaining_stx;
+    
+    event::emit(EventCollateralWithdrawn {
+        borrower,
+        collateral_type: COLLATERAL_TYPE_STX_STACKS,
         amount,
     });
 }

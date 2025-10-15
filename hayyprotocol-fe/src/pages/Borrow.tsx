@@ -25,6 +25,7 @@ import { useSbtcBalance } from "@/features/common/hooks/useSbtcBalance";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { Coins, TrendingUp, Info, AlertTriangle, Shield, DollarSign, ArrowUpDown } from "lucide-react";
 import { StacksLending } from "@/components/lend/StacksLending";
+import { AddressChecker } from "@/components/common/AddressChecker";
 
 const Borrow = () => {
   const { wallet, totals, addBorrowed, addCollateral } = useAppState();
@@ -268,6 +269,9 @@ const Borrow = () => {
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Borrow Assets</h1>
           <p className="text-muted-foreground mt-1">Borrow against your collateral across multiple blockchains.</p>
         </header>
+
+        {/* Address Checker - Help users find their collateral */}
+        <AddressChecker />
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-2">

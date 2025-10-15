@@ -9,7 +9,10 @@
 ;; Collateral tracking per user
 (define-map collateral
     { user: principal }
-    { amount: uint }
+    {
+        amount: uint,
+        sui-address: (string-ascii 66) ;; Store user's Sui address (0x...)
+    }
 )
 
 ;; Error codes
@@ -46,7 +49,11 @@
 )
 
 (define-read-only (get-collateral (user principal))
-    (get amount (default-to {amount: u0} (map-get? collateral {user: user})))
+    (get amount (default-to {amount: u0, sui-address: ""} (map-get? collateral {user: user})))
+)
+
+(define-read-only (get-sui-address (user principal))
+    (get sui-address (default-to {amount: u0, sui-address: ""} (map-get? collateral {user: user})))
 )
 
 (define-read-only (get-total-collateral)
@@ -65,23 +72,25 @@
 ;; ========================================
 
 ;; Deposit STX as collateral
-;; This will be detected by relayer and registered on Sui
-(define-public (deposit-collateral (amount uint))
+;; User must provide their Sui address where they want to borrow
+(define-public (deposit-collateral (amount uint) (sui-address (string-ascii 66)))
     (begin
         (asserts! (> amount u0) (err err-non-positive))
+        (asserts! (> (len sui-address) u0) (err err-non-positive)) ;; Ensure Sui address is provided
         (try! (stx-transfer? amount tx-sender (contract-principal)))
         (let
             (
                 (prev (get-collateral tx-sender))
                 (new-amt (+ prev amount))
             )
-            (map-set collateral {user: tx-sender} {amount: new-amt})
+            (map-set collateral {user: tx-sender} {amount: new-amt, sui-address: sui-address})
             (var-set total-collateral (+ (var-get total-collateral) amount))
             (print {
                 event: "collateral-deposited",
                 user: tx-sender,
                 amount: amount,
                 new-balance: new-amt,
+                sui-address: sui-address,
                 block-height: block-height
             })
             (ok new-amt)
@@ -123,7 +132,7 @@
             (asserts! (>= prev amount) (err err-insufficient-funds))
             (try! (as-contract (stx-transfer? amount (contract-principal) user)))
             (let ((new-amt (- prev amount)))
-                (map-set collateral {user: user} {amount: new-amt})
+                (map-set collateral {user: user} {amount: new-amt, sui-address: (get-sui-address user)})
                 (var-set total-collateral (- (var-get total-collateral) amount))
                 (print {
                     event: "collateral-unlocked",

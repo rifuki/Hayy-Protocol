@@ -1,28 +1,25 @@
-# Dependencies
-node_modules/
-dist/
-*.log
-
-# Environment files (never commit these!)
-.env
-.env.local
-.env.production
-
-# State and data files
-state.json
-data/
-
-# IDE files
-.vscode/
-.idea/
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Docker
-docker-compose.override.yml
-
 # Logs
-logs/
+logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.env

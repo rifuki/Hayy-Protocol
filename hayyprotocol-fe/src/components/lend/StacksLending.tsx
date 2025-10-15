@@ -12,13 +12,17 @@ import {
 } from "@/components/ui/select";
 import { useStacks } from "@/hooks/use-stacks";
 import { useStacksContractData } from "@/hooks/use-stacks-data";
+import { useSTXPosition } from "@/hooks/use-stx-position";
+import { PRICES_USD } from "@/data/tokens";
 import {
   depositCollateral,
   requestWithdraw,
   STACKLEND_CONTRACTS,
 } from "@/lib/stacks-transactions";
 import { toast } from "@/hooks/use-toast";
-import { Loader2, Coins, ArrowRightLeft, Wallet } from "lucide-react";
+import { Loader2, Coins, ArrowRightLeft, Wallet, ArrowUpDown } from "lucide-react";
+import { useCurrentAccount } from "@mysten/dapp-kit";
+import { WithdrawModal } from "@/components/borrow/WithdrawModal";
 
 interface StacksLendingProps {
   className?: string;
@@ -26,19 +30,31 @@ interface StacksLendingProps {
 
 export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
   const { address, isConnected, connect, disconnect } = useStacks();
+  const currentSuiAccount = useCurrentAccount();
+  const { position: stxPosition, loading: positionLoading, refetch: refetchPosition } = useSTXPosition();
 
   const [collateralAmount, setCollateralAmount] = useState("");
   const [withdrawAmount, setWithdrawAmount] = useState("");
+  const [suiAddress, setSuiAddress] = useState("");
   const [isDepositing, setIsDepositing] = useState(false);
   const [isWithdrawing, setIsWithdrawing] = useState(false);
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 
   // Clear amounts when disconnected
   useEffect(() => {
     if (!isConnected) {
       setCollateralAmount("");
       setWithdrawAmount("");
+      setSuiAddress("");
     }
   }, [isConnected]);
+
+  // Auto-fill Sui address when Sui wallet is connected
+  useEffect(() => {
+    if (currentSuiAccount?.address) {
+      setSuiAddress(currentSuiAccount.address);
+    }
+  }, [currentSuiAccount]);
 
   // Format amounts for display
   const formatAmount = (amount: number, decimals = 6) => {
@@ -54,6 +70,25 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
       toast({
         title: "Wallet Connection Required",
         description: "Please connect your Stacks wallet",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!suiAddress || suiAddress.trim() === "") {
+      toast({
+        title: "Sui Address Required",
+        description: "Please enter your Sui wallet address or connect Sui wallet",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate Sui address format (0x... and 66 chars total)
+    if (!suiAddress.startsWith("0x") || suiAddress.length !== 66) {
+      toast({
+        title: "Invalid Sui Address",
+        description: "Sui address must start with 0x and be 66 characters long",
         variant: "destructive",
       });
       return;
@@ -77,10 +112,11 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
 
       await depositCollateral(
         microSTX,
+        suiAddress,
         (data) => {
           toast({
             title: "Collateral Deposited Successfully!",
-            description: `${collateralAmount} STX deposited. Transaction: ${data.txId}`,
+            description: `${collateralAmount} STX deposited. Sui address: ${suiAddress.substring(0, 10)}... Transaction: ${data.txId}`,
             duration: 10000,
           });
           setCollateralAmount("");
@@ -437,9 +473,39 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
           <Label htmlFor="collateral" className="text-sm font-medium">
             Deposit STX Collateral
           </Label>
+
+          {/* Sui Address Input */}
           <div className="space-y-2">
+            <Label htmlFor="sui-address" className="text-xs text-muted-foreground">
+              Sui Wallet Address (where you'll borrow)
+            </Label>
             <Input
-              id="collateral"
+              id="sui-address"
+              type="text"
+              placeholder="0x..."
+              value={suiAddress}
+              onChange={(e) => setSuiAddress(e.target.value)}
+              disabled={isDepositing}
+              className="font-mono text-sm"
+            />
+            {currentSuiAccount?.address ? (
+              <p className="text-xs text-green-600">
+                ✓ Auto-filled from connected Sui wallet
+              </p>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                Connect Sui wallet or paste address manually
+              </p>
+            )}
+          </div>
+
+          {/* STX Amount Input */}
+          <div className="space-y-2">
+            <Label htmlFor="collateral-input" className="text-xs text-muted-foreground">
+              STX Amount
+            </Label>
+            <Input
+              id="collateral-input"
               type="number"
               placeholder="Enter STX amount (e.g., 100)"
               value={collateralAmount}
@@ -449,7 +515,7 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
             <Button
               onClick={handleDepositCollateral}
               className="w-full"
-              disabled={isDepositing}
+              disabled={isDepositing || !suiAddress}
             >
               {isDepositing ? (
                 <>
@@ -498,6 +564,65 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
           </div>
         </div>
 
+        {/* Current STX Position */}
+        {currentSuiAccount?.address && (
+          <div className="space-y-3 border rounded-lg p-4 bg-gray-50/50">
+            <Label className="text-sm font-medium text-gray-700">
+              Your Cross-Chain Position
+            </Label>
+            
+            {positionLoading ? (
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Loading position...
+              </div>
+            ) : stxPosition ? (
+              <>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">STX Collateral:</span>
+                    <div className="text-right">
+                      <div className="font-medium">{stxPosition.stxCollateral.toFixed(6)} STX</div>
+                      <div className="text-xs text-gray-500">≈ ${(stxPosition.stxCollateral * PRICES_USD.STX).toFixed(2)}</div>
+                    </div>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">USDC Borrowed:</span>
+                    <span className="font-medium">${stxPosition.usdcBorrowed.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Available to Withdraw:</span>
+                    <div className="text-right">
+                      <div className="font-medium text-green-600">{stxPosition.maxWithdrawStx.toFixed(6)} STX</div>
+                      <div className="text-xs text-gray-500">≈ ${(stxPosition.maxWithdrawStx * PRICES_USD.STX).toFixed(2)}</div>
+                    </div>
+                  </div>
+                </div>
+                
+                {stxPosition.stxCollateral > 0 && (
+                  <Button
+                    onClick={() => setShowWithdrawModal(true)}
+                    variant="default"
+                    className="w-full"
+                    disabled={stxPosition.maxWithdrawStx <= 0}
+                  >
+                    <ArrowUpDown className="h-4 w-4 mr-2" />
+                    Withdraw STX Directly
+                  </Button>
+                )}
+                
+                {stxPosition.hasOutstandingDebt && (
+                  <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded">
+                    ⚠️ Pay off your USDC debt to unlock more collateral for withdrawal
+                  </p>
+                )}
+              </>
+            ) : (
+              <p className="text-sm text-gray-600">No position found</p>
+            )}
+          </div>
+        )}
+
         {/* Actions */}
         <div className="border-t pt-4">
           <Button
@@ -510,6 +635,23 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
           </Button>
         </div>
       </CardContent>
+
+      {/* Withdraw Modal */}
+      {currentSuiAccount?.address && stxPosition && (
+        <WithdrawModal
+          open={showWithdrawModal}
+          onOpenChange={setShowWithdrawModal}
+          maxWithdrawStx={stxPosition.maxWithdrawStx}
+          suiAddress={currentSuiAccount.address}
+          onSuccess={() => {
+            refetchPosition();
+            toast({
+              title: "Withdrawal Successful",
+              description: "Your STX collateral has been withdrawn successfully",
+            });
+          }}
+        />
+      )}
     </Card>
   );
 };

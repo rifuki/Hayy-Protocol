@@ -1,0 +1,6 @@
+{
+  "mappings": {
+    "ST1WVZNYKMK1MS2V2B728ZWJ2C76TAN49C6HSY7JF": "0x4debb63a2d35913b8bc544c074d877706c67cdb00c6d9b685f1702e3e978c600"
+  },
+  "_comment": "Add your Stacks <-> Sui address mappings here. Format: 'ST...stacks': '0x...sui'"
+}

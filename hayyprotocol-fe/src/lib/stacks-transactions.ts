@@ -112,6 +112,7 @@ const callContract = async (options: ContractCallOptions): Promise<void> => {
 // Collateral Management Functions
 export const depositCollateral = async (
   amount: string,
+  suiAddress: string,
   onFinish?: (data: FinishedTxData) => void,
   onCancel?: () => void,
 ): Promise<void> => {
@@ -121,6 +122,7 @@ export const depositCollateral = async (
     functionName: "deposit-collateral",
     functionArgs: [
       uintCV(amount), // amount in microSTX
+      stringAsciiCV(suiAddress), // Sui wallet address (0x...)
     ],
     onFinish,
     onCancel,
