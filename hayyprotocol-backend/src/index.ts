@@ -2,15 +2,15 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { SuiClient } from '@mysten/sui.js/client';
 import fs from 'fs/promises';
-import { config } from './config.js';
+import { config, CORS_ORIGINS } from './config.js';
 import { relayerAddress } from './suiClient.js';
 import { initializeRelayer, startRelayer } from './relayer.js';
 
 const app = new Hono();
 
-// Enable CORS
+// Enable CORS with origins from environment
 app.use('/*', cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:8080', 'http://localhost:8081', 'https://stacklend.vercel.app'],
+  origin: CORS_ORIGINS,
   allowHeaders: ['Content-Type', 'Authorization'],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 }));

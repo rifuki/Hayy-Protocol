@@ -62,8 +62,9 @@ async function fetchContractTransactions(
   limit = 50,
   offset = 0
 ): Promise<StacksTxSummary[]> {
-  // Fetch transactions TO the contract, not FROM the deployer address
-  const url = `${config.STACKS_API_URL}/extended/v1/address/${contractId}/transactions?limit=${limit}&offset=${offset}&unanchored=false`;
+  // Fetch transactions TO the contract
+  // unanchored=true allows fetching pending transactions for faster detection
+  const url = `${config.STACKS_API_URL}/extended/v1/address/${contractId}/transactions?limit=${limit}&offset=${offset}&unanchored=true`;
 
   const response = await fetch(url);
   if (!response.ok) {

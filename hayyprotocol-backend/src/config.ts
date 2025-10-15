@@ -4,12 +4,13 @@ import { z } from 'zod';
 const Env = z.object({
   // Server
   PORT: z.string().optional().transform(val => val ? parseInt(val) : 3001),
-  
+  CORS_ORIGINS: z.string().default('http://localhost:3000,http://localhost:5173,http://localhost:8080,http://localhost:8081'),
+
   // Stacks
   STACKS_API_URL: z.string().url().default('https://api.testnet.hiro.so'),
   STACKS_NETWORK: z.enum(['mainnet', 'testnet']).default('testnet'),
   STACKS_COLLATERAL_CONTRACT: z.string(),
-  STACKS_CONFIRMATIONS: z.string().default('1'),
+  STACKS_CONFIRMATIONS: z.string().default('0'), // 0 = process immediately, 1+ = wait for confirmations
 
   // Sui
   SUI_RPC_URL: z.string().url().default('https://fullnode.testnet.sui.io:443'),
@@ -25,8 +26,8 @@ const Env = z.object({
   COINGECKO_API_KEY: z.string().optional(),
   PRICE_UPDATE_INTERVAL_MS: z.string().default('60000'),
 
-  // Polling
-  POLL_INTERVAL_MS: z.string().default('10000'),
+  // Polling (faster polling for quicker detection)
+  POLL_INTERVAL_MS: z.string().default('5000'), // 5 seconds instead of 10
   STATE_FILE: z.string().default('./relayer-state.json'),
 
   // Logging
@@ -38,3 +39,6 @@ export const config = Env.parse(process.env);
 export const STACKS_CONFIRMATIONS = parseInt(config.STACKS_CONFIRMATIONS);
 export const POLL_INTERVAL_MS = parseInt(config.POLL_INTERVAL_MS);
 export const PRICE_UPDATE_INTERVAL_MS = parseInt(config.PRICE_UPDATE_INTERVAL_MS);
+
+// Parse CORS origins from comma-separated string
+export const CORS_ORIGINS = config.CORS_ORIGINS.split(',').map(origin => origin.trim());
