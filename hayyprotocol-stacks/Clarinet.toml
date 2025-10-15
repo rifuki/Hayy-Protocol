@@ -5,7 +5,7 @@ authors = []
 telemetry = true
 cache_dir = "./.cache"
 
-[contracts.collateral-v2]
+[contracts.collateral-v1]
 path = "contracts/collateral-v1.clar"
 clarity_version = 2
 epoch = "3.0"
