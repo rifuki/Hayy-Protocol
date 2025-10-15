@@ -2,6 +2,9 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { SuiClient } from '@mysten/sui.js/client';
 import fs from 'fs/promises';
+import { config } from './config.js';
+import { relayerAddress } from './suiClient.js';
+import { initializeRelayer, startRelayer } from './relayer.js';
 
 const app = new Hono();
 
@@ -414,13 +417,55 @@ app.post('/api/withdraw', async (c) => {
   }
 });
 
-console.log(`🚀 StackLend API Server starting on http://localhost:${port}`);
+// ========================================
+// START BOTH SERVICES
+// ========================================
 
-// Start server with Node.js/tsx
-const { serve } = require('@hono/node-server');
-serve({
-  fetch: app.fetch,
-  port: port,
-}, (info) => {
-  console.log(`StackLend API Server running on http://localhost:${info.port}`);
+async function startServices() {
+  // 1. Log relayer address
+  console.log('\n============================================================');
+  console.log('🚀  StackLend Cross-Chain Relayer + API Server');
+  console.log('============================================================');
+  console.log(`📍 Stacks: ${config.STACKS_NETWORK} (${config.STACKS_COLLATERAL_CONTRACT.split('.')[0].substring(0, 20)}...)`);
+  console.log(`📍 Sui: testnet (Registry: ${config.SUI_BORROW_REGISTRY_ID.substring(0, 20)}...)`);
+  console.log(`📍 Relayer: ${relayerAddress}`);
+  console.log('============================================================\n');
+
+  // 3. Initialize relayer state
+  initializeRelayer();
+
+  // 4. Start relayer in background (non-blocking)
+  console.log('🔄 Starting relayer...');
+  // Don't await - let it run in background
+  startRelayer().catch((error) => {
+    console.error('❌ Relayer error:', error);
+  });
+
+  // 5. Start API server
+  console.log(`🚀 Starting API Server on http://localhost:${port}...\n`);
+  const { serve } = require('@hono/node-server');
+  serve({
+    fetch: app.fetch,
+    port: port,
+  }, (info: any) => {
+    console.log(`✅ API Server running on http://localhost:${info.port}`);
+    console.log('============================================================\n');
+  });
+}
+
+// Handle graceful shutdown
+process.on('SIGINT', () => {
+  console.log('\n👋 Received SIGINT, shutting down gracefully...');
+  process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+  console.log('\n👋 Received SIGTERM, shutting down gracefully...');
+  process.exit(0);
+});
+
+// Start both services
+startServices().catch((error) => {
+  console.error('❌ Fatal error starting services:', error);
+  process.exit(1);
 });
