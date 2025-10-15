@@ -9,8 +9,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { useMutateDepositUsdc } from "@/features/lend/hooks/useMutateDepositUsdc";
+import { useMutateWithdrawUsdc } from "@/features/lend/hooks/useMutateWithdrawUsdc";
+import { useLendingPoolData } from "@/features/lend/hooks/useLendingPoolData";
+import { useLendingReceipts } from "@/features/lend/hooks/useLendingReceipts";
+import { useUsdcBalance } from "@/features/common/hooks/useUsdcBalance";
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { Coins, TrendingUp, Info, DollarSign } from "lucide-react";
+import { Coins, TrendingUp, Info, DollarSign, PiggyBank, TrendingDown } from "lucide-react";
 
 const Lend = () => {
   const currentAccount = useCurrentAccount();
@@ -21,6 +25,28 @@ const Lend = () => {
     mutateAsync: mutateDepositUsdc,
     isPending: isDepositPending,
   } = useMutateDepositUsdc();
+
+  const {
+    mutateAsync: mutateWithdrawUsdc,
+    isPending: isWithdrawPending,
+  } = useMutateWithdrawUsdc();
+
+  const {
+    data: poolData,
+    isLoading: isPoolDataLoading,
+    refetch: refetchPoolData,
+  } = useLendingPoolData();
+
+  const {
+    data: lendingReceipts = [],
+    isLoading: isReceiptsLoading,
+    refetch: refetchReceipts,
+  } = useLendingReceipts();
+
+  const {
+    data: usdcBalance = 0,
+    isLoading: isBalanceLoading,
+  } = useUsdcBalance();
 
   const handleSupplyUSDC = async () => {
     if (!currentAccount) {
@@ -41,9 +67,27 @@ const Lend = () => {
     try {
       await mutateDepositUsdc({ amount });
       setDepositAmount("1000"); // Reset amount after success
+      refetchPoolData(); // Refresh pool data after deposit
     } catch (error) {
-      // Error handling is done in the hook
       console.error("Deposit error:", error);
+    }
+  };
+
+  const handleWithdrawReceipt = async (receiptId: string, amount: number) => {
+    if (!currentAccount) {
+      toast({ title: "Please connect a Sui wallet first" });
+      return;
+    }
+
+    try {
+      await mutateWithdrawUsdc({ 
+        receiptId,
+        amount: amount / 1_000_000 // Convert to display amount
+      });
+      refetchPoolData(); // Refresh pool data after withdrawal
+      refetchReceipts(); // Refresh receipts after withdrawal
+    } catch (error) {
+      console.error("Withdraw error:", error);
     }
   };
 
@@ -56,7 +100,97 @@ const Lend = () => {
           <p className="text-muted-foreground mt-1">Earn yield by supplying liquidity to lending pools.</p>
         </header>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        {/* Pool Stats Overview */}
+        <div className="grid gap-4 md:grid-cols-3">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Pool Liquidity</CardTitle>
+              <PiggyBank className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {isPoolDataLoading ? "..." : `$${(poolData?.totalDeposits || 0).toLocaleString()}`}
+              </div>
+              <p className="text-xs text-muted-foreground">Available for borrowing</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Your Deposits</CardTitle>
+              <DollarSign className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {isPoolDataLoading ? "..." : `$${(poolData?.userDeposits || 0).toLocaleString()}`}
+              </div>
+              <p className="text-xs text-muted-foreground">Earning {poolData?.interestRate || 8.5}% APY</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Borrowed</CardTitle>
+              <TrendingDown className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {isPoolDataLoading ? "..." : `$${(poolData?.totalBorrowed || 0).toLocaleString()}`}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {((poolData?.totalBorrowed || 0) / (poolData?.totalDeposits || 1) * 100).toFixed(1)}% utilization
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* User's Lending Receipts */}
+        {currentAccount && lendingReceipts.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Coins className="h-5 w-5" />
+                Your Lending Receipts ({lendingReceipts.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-3">
+                {isReceiptsLoading ? (
+                  <div className="text-sm text-muted-foreground">Loading receipts...</div>
+                ) : (
+                  lendingReceipts.map((receipt) => (
+                    <div 
+                      key={receipt.id} 
+                      className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
+                    >
+                      <div className="space-y-1">
+                        <div className="text-sm font-medium">
+                          {receipt.displayAmount} USDC
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          Deposited: {new Date(receipt.depositedAt).toLocaleDateString()}
+                        </div>
+                        <div className="text-xs text-green-600 font-medium">
+                          ID: {receipt.id.slice(0, 8)}...{receipt.id.slice(-4)}
+                        </div>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => handleWithdrawReceipt(receipt.id, receipt.amount)}
+                        disabled={isDepositPending || isWithdrawPending}
+                      >
+                        {isWithdrawPending ? "Withdrawing..." : "Withdraw"}
+                      </Button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="stacks" className="flex items-center gap-2">
               <Coins className="h-4 w-4" />
@@ -142,17 +276,27 @@ const Lend = () => {
                       placeholder="Enter USDC amount"
                       value={depositAmount}
                       onChange={(e) => setDepositAmount(e.target.value)}
-                      disabled={isDepositPending}
+                      disabled={isDepositPending || isWithdrawPending}
                     />
+                    <div className="text-xs text-muted-foreground">
+                      💳 Your USDC Balance: {isBalanceLoading ? "..." : `${usdcBalance.toLocaleString()} USDC`}
+                    </div>
                   </div>
                   
                   <Button 
                     onClick={handleSupplyUSDC}
                     className="w-full"
-                    disabled={isDepositPending || !currentAccount}
+                    disabled={isDepositPending || isWithdrawPending || !currentAccount}
                   >
                     {isDepositPending ? "Depositing..." : "Supply USDC"}
                   </Button>
+
+                  {/* Hint for withdrawal */}
+                  {lendingReceipts.length > 0 && (
+                    <div className="text-xs text-muted-foreground border-t pt-2">
+                      💡 To withdraw, use your lending receipts below
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -161,9 +305,9 @@ const Lend = () => {
                   <CardTitle className="flex items-center justify-between text-muted-foreground">
                     <span className="flex items-center gap-2">
                       <div className="w-8 h-8 rounded-full bg-gray-400 flex items-center justify-center text-white font-bold text-sm">
-                        sBTC
+                        <img src="https://asset-metadata-service-production.s3.amazonaws.com/asset_icons/7a322b610252ca8a28b950773b0fb8855ebc2611e6611d20525284bcdd9fde63.png" />
                       </div>
-                      Sui Bitcoin (sBTC)
+                      Stacks Bitcoin (sBTC)
                     </span>
                     <Badge variant="outline">Soon</Badge>
                   </CardTitle>

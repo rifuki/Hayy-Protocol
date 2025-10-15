@@ -1,6 +1,6 @@
 module stacklend::borrow_controller;
 
-use sui::{coin::Coin, dynamic_field, event};
+use sui::{coin::{Self, Coin}, dynamic_field, event};
 use stacklend::mock_sbtc::MOCK_SBTC;
 use stacklend::mock_usdc::MOCK_USDC;
 use stacklend::usdc_lending_pool::{Self, UsdcLendingPool};
@@ -58,6 +58,10 @@ public struct BorrowRegistry has key {
 
     // Track total positions count
     total_positions: u64,
+    
+    // Collateral balances - store actual deposited tokens
+    sbtc_balance_sui: Coin<MOCK_SBTC>,
+    total_sbtc_collateral_sui: u64,
 }
 
 // Individual borrow position (stored as dynamic field)
@@ -130,6 +134,9 @@ fun init(_witness: BORROW_CONTROLLER, ctx: &mut TxContext) {
         stx_price_usd: 2_500000,      // $2.5
         usdc_price_usd: 1_000000,     // $1
         total_positions: 0,
+        // Initialize empty collateral balances
+        sbtc_balance_sui: coin::zero<MOCK_SBTC>(ctx),
+        total_sbtc_collateral_sui: 0,
     };
 
     event::emit(EventRegistryCreated {
@@ -177,15 +184,59 @@ public entry fun deposit_sbtc_collateral_sui(
     let position = dynamic_field::borrow_mut<address, BorrowPosition>(&mut registry.id, borrower);
     position.sbtc_collateral_sui = position.sbtc_collateral_sui + amount;
 
+    // Update registry total collateral
+    registry.total_sbtc_collateral_sui = registry.total_sbtc_collateral_sui + amount;
+
     event::emit(EventCollateralDeposited {
         borrower,
         collateral_type: COLLATERAL_TYPE_SBTC_SUI,
         amount,
     });
 
-    // Store the sBTC in registry (in production, use proper vault)
-    // For MVP, transfer to admin for safekeeping
-    transfer::public_transfer(sbtc, registry.admin);
+    // CRITICAL FIX: Add the deposited sBTC to registry's balance instead of just transferring
+    // This ensures the user's balance is actually reduced
+    coin::join(&mut registry.sbtc_balance_sui, sbtc);
+}
+
+// Withdraw sBTC collateral from Sui (only if no outstanding debt)
+#[allow(lint(public_entry))]
+public entry fun withdraw_sbtc_collateral_sui(
+    registry: &mut BorrowRegistry,
+    amount: u64,
+    ctx: &mut TxContext
+) {
+    assert!(amount > 0, E_INVALID_AMOUNT);
+
+    let borrower = ctx.sender();
+    assert!(dynamic_field::exists_(&registry.id, borrower), E_POSITION_NOT_FOUND);
+
+    // Get position from registry
+    let position = dynamic_field::borrow_mut<address, BorrowPosition>(&mut registry.id, borrower);
+
+    // Check that user has no outstanding debt
+    assert!(position.usdc_borrowed == 0, E_INSUFFICIENT_COLLATERAL);
+
+    // Check that user has enough collateral
+    assert!(position.sbtc_collateral_sui >= amount, E_INSUFFICIENT_COLLATERAL);
+    
+    // Check registry has enough sBTC balance
+    assert!(coin::value(&registry.sbtc_balance_sui) >= amount, E_INSUFFICIENT_COLLATERAL);
+
+    // Update position
+    position.sbtc_collateral_sui = position.sbtc_collateral_sui - amount;
+    
+    // Update registry total collateral
+    registry.total_sbtc_collateral_sui = registry.total_sbtc_collateral_sui - amount;
+
+    // CRITICAL FIX: Extract actual sBTC from registry and transfer to user
+    let withdrawn_sbtc = coin::split(&mut registry.sbtc_balance_sui, amount, ctx);
+    transfer::public_transfer(withdrawn_sbtc, borrower);
+
+    event::emit(EventCollateralDeposited {
+        borrower,
+        collateral_type: COLLATERAL_TYPE_SBTC_SUI,
+        amount: amount, // Amount withdrawn
+    });
 }
 
 // Register collateral from Stacks (called by relayer)

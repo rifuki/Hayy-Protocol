@@ -1,6 +1,6 @@
 module stacklend::usdc_lending_pool;
 
-use sui::{balance::Balance, coin::{Self, Coin}, display, event, package, table::{Self, Table}};
+use sui::{balance::{Self, Balance}, coin::{Self, Coin}, display, event, package, table::{Self, Table}};
 use stacklend::mock_usdc::MOCK_USDC;
 
 const E_INVALID_AMOUNT: u64 = 101;
@@ -107,6 +107,33 @@ public entry fun create_usdc_pool(
     let lending_pool = UsdcLendingPool {
         id: object::new(ctx),
         usdc_balance: usdc.into_balance(),
+        lender_deposits: table::new(ctx),
+        total_lent: 0,
+        accumulated_yield: 0,
+        apy_bps,
+        owner
+    };
+
+    event::emit(EventLendingPoolCreated {
+        pool_id: object::id(&lending_pool),
+        apy_bps: lending_pool.apy_bps,
+        owner
+    });
+
+    transfer::share_object(lending_pool);
+}
+
+// Create USDC lending pool with zero initial balance
+#[allow(lint(public_entry))]
+public entry fun create_usdc_pool_zero(
+    apy_bps: u64,
+    ctx: &mut TxContext
+) {
+    let owner = ctx.sender();
+
+    let lending_pool = UsdcLendingPool {
+        id: object::new(ctx),
+        usdc_balance: balance::zero<MOCK_USDC>(),
         lender_deposits: table::new(ctx),
         total_lent: 0,
         accumulated_yield: 0,

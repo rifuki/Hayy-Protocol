@@ -24,7 +24,6 @@ const Faucet = () => {
       <section className="space-y-6 animate-enter">
         <header className="text-center space-y-4">
           <div className="flex items-center justify-center gap-3">
-            <Droplets className="h-8 w-8 text-blue-500" />
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
               Test Token Faucet
             </h1>

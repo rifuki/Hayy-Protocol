@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import { Progress } from '@/components/ui/progress';
 import { TOKENS, PRICES_USD } from '@/data/tokens';
+import { useSbtcBalance } from '@/features/common/hooks/useSbtcBalance';
 import { 
   Lock, 
   TrendingDown, 
@@ -37,6 +38,9 @@ export const SuiBorrowing = ({
   onCollateralDeposit,
   onBorrow
 }: SuiBorrowingProps) => {
+  // Get user's sBTC balance
+  const { data: sbtcBalance, isLoading: isSbtcBalanceLoading } = useSbtcBalance();
+  
   // Collateral state
   const [sbtcCollateralAmount, setSbtcCollateralAmount] = useState('');
   const [isDepositingCollateral, setIsDepositingCollateral] = useState(false);
@@ -50,6 +54,15 @@ export const SuiBorrowing = ({
   
   // Mock pool liquidity
   const poolLiquidity = 125000; // USDC available
+  
+  // Set default collateral amount based on user's sBTC balance
+  useEffect(() => {
+    if (sbtcBalance && sbtcBalance > 0 && sbtcCollateralAmount === '') {
+      // Set default to user's full balance or 0.01 (whichever is smaller)
+      const defaultAmount = Math.min(sbtcBalance, 0.01);
+      setSbtcCollateralAmount(defaultAmount.toFixed(4));
+    }
+  }, [sbtcBalance]);
   
   useEffect(() => {
     // Mock user position - in real app, fetch from borrow_controller
@@ -205,7 +218,7 @@ export const SuiBorrowing = ({
                 type="number"
                 value={sbtcCollateralAmount}
                 onChange={(e) => setSbtcCollateralAmount(e.target.value)}
-                placeholder="0.1"
+                placeholder="0.01"
                 step="0.001"
               />
               {sbtcCollateralAmount && (
@@ -215,30 +228,37 @@ export const SuiBorrowing = ({
                   Borrowing capacity: ${(parseFloat(sbtcCollateralAmount) * PRICES_USD.sBTC * 0.7).toLocaleString()} USD
                 </div>
               )}
+              {sbtcBalance && (
+                <div className="text-xs text-muted-foreground">
+                  🪙 Your sBTC Balance: {sbtcBalance.toFixed(4)} sBTC
+                </div>
+              )}
             </div>
             
             <div className="flex gap-2">
               <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={() => setSbtcCollateralAmount('0.1')}
+                onClick={() => setSbtcCollateralAmount('0.01')}
               >
-                0.1
+                0.01
               </Button>
               <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={() => setSbtcCollateralAmount('0.5')}
+                onClick={() => setSbtcCollateralAmount('0.005')}
               >
-                0.5
+                0.005
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setSbtcCollateralAmount('1')}
-              >
-                1.0
-              </Button>
+              {sbtcBalance && sbtcBalance > 0 && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setSbtcCollateralAmount(sbtcBalance.toString())}
+                >
+                  Max ({sbtcBalance.toFixed(4)})
+                </Button>
+              )}
             </div>
             
             <Button 

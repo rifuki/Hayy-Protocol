@@ -16,10 +16,10 @@ const E_COOLDOWN_ACTIVE: u64 = 205;
 // ========================================
 //  CONSTANTS
 // ========================================
-const MAX_SINGLE_USDC_MINT: u64 = 1000_000000; // 1,000 USDC
-const MAX_SINGLE_SBTC_MINT: u64 = 100_000000000; // 100 sBTC (9 decimals)
-const DAILY_USDC_LIMIT: u64 = 5000_000000; // 5,000 USDC per day
-const DAILY_SBTC_LIMIT: u64 = 500_000000000; // 500 sBTC per day
+const MAX_SINGLE_USDC_MINT: u64 = 1_000_000_000; // 1,000 USDC
+const MAX_SINGLE_SBTC_MINT: u64 = 1_000_000; // 0.01 sBTC (8 decimals)
+const DAILY_USDC_LIMIT: u64 = 5_000_000_000; // 5,000 USDC per day
+const DAILY_SBTC_LIMIT: u64 = 10_000_000; // 0.1 sBTC per day
 const COOLDOWN_PERIOD_MS: u64 = 300000; // 5 minutes
 const MS_PER_DAY: u64 = 86400000; // 24 hours in milliseconds
 

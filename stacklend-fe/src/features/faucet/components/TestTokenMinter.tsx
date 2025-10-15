@@ -15,7 +15,7 @@ export const TestTokenMinter: React.FC<TestTokenMinterProps> = ({
   onMintSuccess,
 }) => {
   const [usdcAmount, setUsdcAmount] = useState("1000");
-  const [sbtcAmount, setSbtcAmount] = useState("0.1");
+  const [sbtcAmount, setSbtcAmount] = useState("0.01");
 
   const {
     mutateAsync: mutateMintMockUsdc,
@@ -49,7 +49,7 @@ export const TestTokenMinter: React.FC<TestTokenMinterProps> = ({
     try {
       await mutateMintMockSbtc({ amount });
       onMintSuccess?.("sBTC", amount);
-      setSbtcAmount("0.1");
+      setSbtcAmount("0.01");
     } catch (error) {
       console.error("sBTC mint failed:", error);
     }
@@ -134,8 +134,8 @@ export const TestTokenMinter: React.FC<TestTokenMinterProps> = ({
               type="number"
               value={sbtcAmount}
               onChange={(e) => setSbtcAmount(e.target.value)}
-              placeholder="0.1"
-              step="0.01"
+              placeholder="0.01"
+              step="0.001"
             />
           </div>
 
@@ -143,16 +143,16 @@ export const TestTokenMinter: React.FC<TestTokenMinterProps> = ({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setSbtcAmount("0.1")}
+              onClick={() => setSbtcAmount("0.01")}
             >
-              0.1
+              0.01
             </Button>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setSbtcAmount("1")}
+              onClick={() => setSbtcAmount("0.005")}
             >
-              1.0
+              0.005
             </Button>
           </div>
 
