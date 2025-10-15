@@ -10,6 +10,9 @@ services:
       - "3001:3001"
     env_file:
       - .env
+    environment:
+      # Override STATE_FILE for Docker (use persistent volume path)
+      - STATE_FILE=/app/data/relayer-state.json
     volumes:
       # Persist relayer state
       - relayer-data:/app/data

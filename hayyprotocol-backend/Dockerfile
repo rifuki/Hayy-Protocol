@@ -29,8 +29,10 @@ RUN adduser --system --uid 1001 relayer
 COPY --from=deps --chown=relayer:nodejs /app/node_modules ./node_modules
 COPY --chown=relayer:nodejs . .
 
-# Create directory for state file
-RUN mkdir -p /app/data && chown relayer:nodejs /app/data
+# Create directory for state files and initialize empty state
+RUN mkdir -p /app/data && \
+    echo '{"lastStacksBlock":0,"processedEvents":{},"priceCache":{"stxUsd":0.5,"sbtcUsd":65000,"lastUpdate":0},"addressMappings":{}}' > /app/data/relayer-state.json && \
+    chown -R relayer:nodejs /app/data
 
 USER relayer
 

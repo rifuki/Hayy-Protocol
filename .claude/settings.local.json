@@ -6,7 +6,8 @@
       "Bash(mv check-all-positions.js check-position.js check-positions.js check-registry.js debug-sui.js lookup-by-stacks.js test-sui-call.js debug/)",
       "Bash(rm hayyprotocol-backend/api-server.ts)",
       "Bash(rm api-server.ts)",
-      "Bash(rm manual-register.mjs)"
+      "Bash(rm manual-register.mjs)",
+      "Bash(chmod +x fix-docker-permissions.sh)"
     ],
     "deny": [],
     "ask": []

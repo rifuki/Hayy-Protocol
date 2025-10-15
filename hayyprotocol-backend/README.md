@@ -194,6 +194,58 @@ docker-compose logs -f
 docker-compose down
 ```
 
+### ⚠️ Important: State File & Event Duplication
+
+**Docker uses persistent volume for state:**
+- State file location in Docker: `/app/data/relayer-state.json`
+- Persisted via Docker volume `relayer-data`
+- **Local vs VPS state files are SEPARATE**
+
+**To avoid event duplication when moving from local to VPS:**
+
+1. **Option A: Start fresh on VPS** (Recommended for testnet)
+   ```bash
+   # VPS will process events from current block onwards
+   # Already processed events on local won't be re-processed (they're on-chain)
+   docker-compose up -d
+   ```
+
+2. **Option B: Copy state file from local to VPS**
+   ```bash
+   # On local machine, copy state
+   scp relayer-state.json user@vps:/path/to/hayyprotocol-backend/
+
+   # On VPS, import state into Docker volume
+   docker run --rm -v stacklend-backend_relayer-data:/data \
+     -v $(pwd)/relayer-state.json:/relayer-state.json \
+     alpine cp /relayer-state.json /data/relayer-state.json
+
+   # Then start
+   docker-compose up -d
+   ```
+
+3. **Option C: Set starting block manually**
+   ```bash
+   # Edit state file in Docker volume
+   docker run --rm -v stacklend-backend_relayer-data:/data \
+     alpine sh -c 'echo "{\"lastStacksBlock\":3602954,\"processedEvents\":{},\"priceCache\":{\"stxUsd\":0.5,\"sbtcUsd\":65000,\"lastUpdate\":0},\"addressMappings\":{}}" > /data/relayer-state.json'
+   ```
+
+**Check current state in Docker:**
+```bash
+# View state file
+docker exec stacklend-backend cat /app/data/relayer-state.json
+
+# Or access volume directly
+docker run --rm -v stacklend-backend_relayer-data:/data alpine cat /data/relayer-state.json
+```
+
+**Event Duplication Protection:**
+- Relayer tracks processed events in `processedEvents` map
+- Each event has unique ID: `txHash:eventType`
+- If event ID already exists, it's skipped automatically
+- **You're safe from duplication even if you reprocess old blocks**
+
 See [DOCKER_DEPLOYMENT.md](./DOCKER_DEPLOYMENT.md) for detailed Docker setup.
 
 ## 🔧 Development
@@ -251,6 +303,26 @@ node debug/test-sui-call.js
 
 ### Price feed errors
 **Fix:** CoinGecko API may be rate-limited. Fallback prices ($0.50 STX, $65k BTC) will be used automatically.
+
+### Docker: "EACCES: permission denied" on relayer-state.json
+**Cause:** State file has wrong permissions in Docker container
+
+**Fix:**
+```bash
+# Stop container
+docker-compose down
+
+# Remove old volume
+docker volume rm stacklend-backend_relayer-data
+
+# Rebuild and restart (will create new volume with correct permissions)
+docker-compose up -d --build
+```
+
+### Docker: Events being processed twice
+**Cause:** Different state files between local and VPS/Docker
+
+**Fix:** See "State File & Event Duplication" section under Docker Deployment above.
 
 ## 📊 Monitoring
 
