@@ -5,12 +5,10 @@ authors = []
 telemetry = true
 cache_dir = "./.cache"
 
-[contracts.collateral-v1]
+[contracts.collateral-v2]
 path = "contracts/collateral-v1.clar"
-# epoch = "latest"
-
-[contracts.lending-v1]
-path = "contracts/lending-v1.clar"
+clarity_version = 2
+epoch = "3.0"
 
 [repl.analysis]
 passes = ["check_checker"]

@@ -14,10 +14,7 @@ import { useStacks } from "@/hooks/use-stacks";
 import { useStacksContractData } from "@/hooks/use-stacks-data";
 import {
   depositCollateral,
-  withdrawCollateral,
-  borrowCrossChain,
-  signalRepayment,
-  depositLending,
+  requestWithdraw,
   STACKLEND_CONTRACTS,
 } from "@/lib/stacks-transactions";
 import { toast } from "@/hooks/use-toast";
@@ -155,12 +152,12 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
         parseFloat(withdrawAmount) * 1_000_000,
       ).toString();
 
-      await withdrawCollateral(
+      await requestWithdraw(
         microSTX,
         (data) => {
           toast({
-            title: "Collateral Withdrawn Successfully!",
-            description: `${withdrawAmount} STX withdrawn. Transaction: ${data.txId}`,
+            title: "Withdrawal Request Submitted!",
+            description: `Request for ${withdrawAmount} STX submitted. Relayer will process after Sui verification. Transaction: ${data.txId}`,
             duration: 10000,
           });
           setWithdrawAmount("");
@@ -168,7 +165,7 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
         () => {
           toast({
             title: "Transaction Cancelled",
-            description: "Withdrawal was cancelled by user",
+            description: "Withdrawal request was cancelled by user",
             variant: "default",
           });
         },
@@ -481,11 +478,14 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
           </div>
         </div>
 
-        {/* Withdraw Collateral */}
+        {/* Request Withdrawal */}
         <div className="space-y-3">
           <Label htmlFor="withdraw" className="text-sm font-medium">
-            Withdraw STX Collateral
+            Request STX Withdrawal
           </Label>
+          <p className="text-xs text-gray-500">
+            Withdrawal will be processed by relayer after Sui debt verification
+          </p>
           <div className="space-y-2">
             <Input
               id="withdraw"
@@ -504,10 +504,10 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
               {isWithdrawing ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Withdrawing...
+                  Requesting...
                 </>
               ) : (
-                "Withdraw Collateral"
+                "Request Withdrawal"
               )}
             </Button>
           </div>
