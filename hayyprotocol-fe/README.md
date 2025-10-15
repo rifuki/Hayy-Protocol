@@ -32,9 +32,42 @@ cd <YOUR_PROJECT_NAME>
 # Step 3: Install the necessary dependencies.
 npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Step 4: Configure environment variables.
+cp .env.example .env.local
+# Edit .env.local and update VITE_API_BASE_URL if needed
+
+# Step 5: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
+
+## Environment Configuration
+
+This project requires environment variables to connect to the backend API.
+
+### Setup
+
+1. Copy the example environment file:
+   ```bash
+   cp .env.example .env.local
+   ```
+
+2. Update the backend API URL in `.env.local`:
+   ```bash
+   # For local development (default)
+   VITE_API_BASE_URL=http://localhost:3001/api
+
+   # For production (update with your VPS domain)
+   VITE_API_BASE_URL=https://your-vps-domain.com/api
+   ```
+
+### Environment Files
+
+- `.env.example` - Template with all available variables
+- `.env.local` - Local development (gitignored)
+- `.env.production` - Production build configuration
+- `.env` - Shared environment variables (gitignored)
+
+**Note:** Never commit `.env.local` or `.env` files to git as they may contain sensitive information.
 
 **Edit a file directly in GitHub**
 

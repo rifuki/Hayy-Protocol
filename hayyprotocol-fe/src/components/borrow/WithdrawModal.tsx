@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { PRICES_USD } from "@/data/tokens";
+import { stackLendAPI } from "@/lib/api";
 
 interface WithdrawModalProps {
   open: boolean;
@@ -13,12 +14,12 @@ interface WithdrawModalProps {
   onSuccess?: () => void;
 }
 
-export const WithdrawModal = ({ 
-  open, 
-  onOpenChange, 
-  maxWithdrawStx, 
+export const WithdrawModal = ({
+  open,
+  onOpenChange,
+  maxWithdrawStx,
   suiAddress,
-  onSuccess 
+  onSuccess
 }: WithdrawModalProps) => {
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
@@ -37,19 +38,10 @@ export const WithdrawModal = ({
     setError("");
 
     try {
-      // Call the withdraw API
-      const response = await fetch('http://localhost:3001/api/withdraw', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          suiAddress,
-          amount: amountNum
-        })
+      const result = await stackLendAPI.withdraw({
+        suiAddress,
+        amount: amountNum
       });
-
-      const result = await response.json();
 
       if (result.success) {
         setAmount("");
@@ -92,8 +84,8 @@ export const WithdrawModal = ({
                 step="0.01"
                 disabled={loading}
               />
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={handleMaxClick}
                 disabled={loading || maxWithdrawStx <= 0}
               >
@@ -125,15 +117,15 @@ export const WithdrawModal = ({
           )}
 
           <div className="flex gap-2">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={loading}
               className="flex-1"
             >
               Cancel
             </Button>
-            <Button 
+            <Button
               onClick={handleWithdraw}
               disabled={loading || !amount || amountNum <= 0 || amountNum > maxWithdrawStx}
               className="flex-1"

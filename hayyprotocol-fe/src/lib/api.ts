@@ -1,5 +1,6 @@
 // API client for StackLend backend
-const API_BASE_URL = 'http://localhost:3001/api';
+// Use environment variable for API base URL (for different environments)
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
 
 export interface Position {
   suiAddress: string;
@@ -37,11 +38,34 @@ export interface PositionsResponse {
   total: number;
 }
 
+export interface WithdrawRequest {
+  suiAddress: string;
+  amount: number;
+}
+
+export interface WithdrawResponse {
+  success: boolean;
+  message?: string;
+  warning?: string;
+  suiAddress?: string;
+  stacksAddress?: string;
+  amount?: number;
+  transactions?: {
+    sui: string;
+    stacks: string | null;
+  };
+}
+
 class StackLendAPI {
   private baseUrl: string;
 
   constructor(baseUrl: string = API_BASE_URL) {
     this.baseUrl = baseUrl;
+  }
+
+  // Get the current API base URL
+  getBaseUrl(): string {
+    return this.baseUrl;
   }
 
   async lookupByStacksAddress(stacksAddress: string): Promise<LookupResponse> {
@@ -71,6 +95,17 @@ class StackLendAPI {
 
   async healthCheck(): Promise<{ success: boolean; message: string; timestamp: string }> {
     const response = await fetch(`${this.baseUrl}/health`);
+    return response.json();
+  }
+
+  async withdraw(request: WithdrawRequest): Promise<WithdrawResponse> {
+    const response = await fetch(`${this.baseUrl}/withdraw`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
     return response.json();
   }
 }

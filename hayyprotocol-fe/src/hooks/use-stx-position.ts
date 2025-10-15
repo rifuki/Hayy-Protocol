@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useCurrentAccount } from '@mysten/dapp-kit';
+import { stackLendAPI } from '@/lib/api';
 
 interface STXPosition {
   stxCollateral: number;
@@ -24,8 +25,7 @@ export const useSTXPosition = () => {
     setError(null);
 
     try {
-      const response = await fetch(`http://localhost:3001/api/position/${currentAccount.address}`);
-      const result = await response.json();
+      const result = await stackLendAPI.getPositionBySuiAddress(currentAccount.address);
 
       if (result.success && result.position) {
         const pos = result.position;
