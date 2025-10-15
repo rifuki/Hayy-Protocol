@@ -29,29 +29,14 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
 
   const [collateralAmount, setCollateralAmount] = useState("");
   const [withdrawAmount, setWithdrawAmount] = useState("");
-  const [borrowAmount, setBorrowAmount] = useState("");
-  const [repayAmount, setRepayAmount] = useState("");
-  const [lendAmount, setLendAmount] = useState("");
-  const [borrowToken, setBorrowToken] = useState<"USDC" | "USDT" | "WBTC">(
-    "USDC",
-  );
-  const [repayToken, setRepayToken] = useState<"USDC" | "USDT" | "WBTC">(
-    "USDC",
-  );
   const [isDepositing, setIsDepositing] = useState(false);
   const [isWithdrawing, setIsWithdrawing] = useState(false);
-  const [isBorrowing, setIsBorrowing] = useState(false);
-  const [isRepaying, setIsRepaying] = useState(false);
-  const [isLending, setIsLending] = useState(false);
 
   // Clear amounts when disconnected
   useEffect(() => {
     if (!isConnected) {
       setCollateralAmount("");
       setWithdrawAmount("");
-      setBorrowAmount("");
-      setRepayAmount("");
-      setLendAmount("");
     }
   }, [isConnected]);
 
@@ -508,52 +493,6 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
                 </>
               ) : (
                 "Request Withdrawal"
-              )}
-            </Button>
-          </div>
-        </div>
-
-        {/* Cross-Chain Borrowing */}
-        <div className="border-t pt-4 space-y-3">
-          <Label className="text-sm font-medium flex items-center gap-2">
-            <ArrowRightLeft className="h-4 w-4" />
-            Cross-Chain Borrow
-          </Label>
-          <div className="space-y-3">
-            <Select
-              value={borrowToken}
-              onValueChange={(value: "USDC" | "USDT" | "WBTC") =>
-                setBorrowToken(value)
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select token to borrow" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="USDC">USDC (6 decimals)</SelectItem>
-                <SelectItem value="USDT">USDT (6 decimals)</SelectItem>
-                <SelectItem value="WBTC">WBTC (8 decimals)</SelectItem>
-              </SelectContent>
-            </Select>
-            <Input
-              type="number"
-              placeholder={`Enter ${borrowToken} amount (e.g., 100)`}
-              value={borrowAmount}
-              onChange={(e) => setBorrowAmount(e.target.value)}
-              disabled={isBorrowing}
-            />
-            <Button
-              onClick={handleCrossChainBorrow}
-              className="w-full"
-              disabled={isBorrowing}
-            >
-              {isBorrowing ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                `Borrow ${borrowToken}`
               )}
             </Button>
           </div>
