@@ -1,7 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(docker build -t stacklend-backend:test .)"
+      "Bash(docker build -t stacklend-backend:test .)",
+      "Bash(mkdir -p /Users/rifuki/stacklend/hayyprotocol-backend/debug)",
+      "Bash(mv check-all-positions.js check-position.js check-positions.js check-registry.js debug-sui.js lookup-by-stacks.js test-sui-call.js debug/)",
+      "Bash(rm hayyprotocol-backend/api-server.ts)",
+      "Bash(rm api-server.ts)",
+      "Bash(rm manual-register.mjs)"
     ],
     "deny": [],
     "ask": []
