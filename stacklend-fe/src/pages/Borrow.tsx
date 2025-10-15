@@ -32,9 +32,9 @@ const Borrow = () => {
   const [bridging, setBridging] = useState(false);
   const [activeTab, setActiveTab] = useState('sui'); // Default to Sui tab
   const [collateralAmount, setCollateralAmount] = useState("");
-  const [withdrawAmount, setWithdrawAmount] = useState("0.005");
+  const [withdrawAmount, setWithdrawAmount] = useState("");
   const [borrowAmount, setBorrowAmount] = useState("");
-  const [repayAmount, setRepayAmount] = useState("500");
+  const [repayAmount, setRepayAmount] = useState("");
 
   // Get user balances
   const { data: sbtcBalance, isLoading: isSbtcBalanceLoading } = useSbtcBalance();
@@ -165,7 +165,7 @@ const Borrow = () => {
 
     try {
       await mutateWithdrawSbtcCollateral({ amount });
-      setWithdrawAmount("0.5"); // Reset amount after success
+      setWithdrawAmount(""); // Reset amount after success
       refetchPosition(); // Refresh position data
     } catch (error) {
       console.error("Withdraw collateral error:", error);
@@ -198,10 +198,12 @@ const Borrow = () => {
     }
 
     const availableToBorrow = borrowPosition.maxBorrowUsd - borrowPosition.usdcBorrowed;
-    if (amount > availableToBorrow) {
+    // Use a small tolerance for floating point precision issues
+    const tolerance = 0.01;
+    if (amount > (availableToBorrow + tolerance)) {
       toast({
         title: "Insufficient Borrowing Power",
-        description: `You can only borrow up to $${availableToBorrow.toLocaleString()}`,
+        description: `You can only borrow up to $${Math.floor(availableToBorrow)}`,
         variant: "destructive",
       });
       return;
@@ -243,34 +245,10 @@ const Borrow = () => {
 
     try {
       await mutateRepayUsdc({ amount });
-      setRepayAmount("500"); // Reset amount after success
+      setRepayAmount(""); // Reset amount after success
       refetchPosition(); // Refresh position data
     } catch (error) {
       console.error("Repay USDC error:", error);
-    }
-  };
-
-  const handleRepayAllUsdc = async () => {
-    if (!currentAccount) {
-      toast({ title: "Please connect a Sui wallet first" });
-      return;
-    }
-
-    if (!borrowPosition || borrowPosition.usdcBorrowed <= 0) {
-      toast({
-        title: "No Debt",
-        description: "You don't have any debt to repay",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      await mutateRepayUsdc({ amount: borrowPosition.usdcBorrowed });
-      setRepayAmount("500"); // Reset amount after success
-      refetchPosition(); // Refresh position data
-    } catch (error) {
-      console.error("Repay All USDC error:", error);
     }
   };
 
@@ -495,11 +473,24 @@ const Borrow = () => {
                         onClick={handleWithdrawCollateral}
                         variant="outline"
                         className="w-full"
-                        disabled={isDepositingCollateral || isWithdrawingCollateral || !currentAccount}
+                        disabled={
+                          isDepositingCollateral || 
+                          isWithdrawingCollateral || 
+                          !currentAccount ||
+                          (borrowPosition && borrowPosition.usdcBorrowed > 0)
+                        }
                       >
                         <ArrowUpDown className="h-4 w-4 mr-2" />
                         {isWithdrawingCollateral ? "Withdrawing..." : "Withdraw sBTC Collateral"}
                       </Button>
+                      
+                      {/* Show warning when withdraw is disabled due to outstanding debt */}
+                      {borrowPosition && borrowPosition.usdcBorrowed > 0 && (
+                        <div className="text-xs text-amber-600 bg-amber-50 p-2 rounded border">
+                          ⚠️ Cannot withdraw collateral while you have outstanding debt. 
+                          Please repay your ${borrowPosition.usdcBorrowed.toLocaleString()} USDC loan first.
+                        </div>
+                      )}
                     </>
                   )}
                 </CardContent>
@@ -570,33 +561,44 @@ const Borrow = () => {
                             <Input
                               id="repay-amount"
                               type="number"
-                              placeholder="Enter repayment amount"
+                              placeholder={`Enter amount (debt: $${borrowPosition.usdcBorrowed})`}
                               value={repayAmount}
                               onChange={(e) => setRepayAmount(e.target.value)}
                               disabled={isDepositingCollateral || isWithdrawingCollateral || isBorrowingUsdc || isRepayingUsdc}
                             />
+                            <div className="flex gap-1 flex-wrap">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setRepayAmount(Math.floor(borrowPosition.usdcBorrowed / 2).toString())}
+                                disabled={isRepayingUsdc}
+                              >
+                                50%
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setRepayAmount(borrowPosition.usdcBorrowed.toString())}
+                                disabled={isRepayingUsdc}
+                              >
+                                All
+                              </Button>
+                            </div>
                             <div className="text-xs text-muted-foreground">
                               Total debt: ${borrowPosition.usdcBorrowed.toLocaleString()} • 
                               Your USDC: {isBalanceLoading ? "..." : `${usdcBalance.toLocaleString()}`}
                             </div>
                           </div>
                           
-                          <div className="grid grid-cols-2 gap-2">
-                            <Button 
-                              onClick={handleRepayUsdc}
-                              variant="outline"
-                              disabled={isDepositingCollateral || isWithdrawingCollateral || isBorrowingUsdc || isRepayingUsdc || !currentAccount}
-                            >
-                              {isRepayingUsdc ? "Repaying..." : "Repay Partial"}
-                            </Button>
-                            <Button 
-                              onClick={handleRepayAllUsdc}
-                              variant="destructive"
-                              disabled={isDepositingCollateral || isWithdrawingCollateral || isBorrowingUsdc || isRepayingUsdc || !currentAccount}
-                            >
-                              Repay All
-                            </Button>
-                          </div>
+                          <Button 
+                            onClick={handleRepayUsdc}
+                            className="w-full"
+                            disabled={isDepositingCollateral || isWithdrawingCollateral || isBorrowingUsdc || isRepayingUsdc || !currentAccount || !repayAmount}
+                          >
+                            {isRepayingUsdc ? "Repaying..." : "Repay USDC"}
+                          </Button>
                         </>
                       )}
                     </>

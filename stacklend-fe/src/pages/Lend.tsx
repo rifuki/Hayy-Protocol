@@ -19,7 +19,7 @@ import { Coins, TrendingUp, Info, DollarSign, PiggyBank, TrendingDown } from "lu
 const Lend = () => {
   const currentAccount = useCurrentAccount();
   const [activeTab, setActiveTab] = useState('sui');
-  const [depositAmount, setDepositAmount] = useState("1000");
+  const [depositAmount, setDepositAmount] = useState("");
 
   const {
     mutateAsync: mutateDepositUsdc,
@@ -66,7 +66,7 @@ const Lend = () => {
 
     try {
       await mutateDepositUsdc({ amount });
-      setDepositAmount("1000"); // Reset amount after success
+      setDepositAmount(""); // Reset amount after success
       refetchPoolData(); // Refresh pool data after deposit
     } catch (error) {
       console.error("Deposit error:", error);
@@ -273,11 +273,49 @@ const Lend = () => {
                     <Input
                       id="deposit-amount"
                       type="number"
-                      placeholder="Enter USDC amount"
+                      placeholder="Enter USDC amount to lend"
                       value={depositAmount}
                       onChange={(e) => setDepositAmount(e.target.value)}
                       disabled={isDepositPending || isWithdrawPending}
                     />
+                    <div className="flex gap-1 flex-wrap">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setDepositAmount("1000")}
+                        disabled={isDepositPending || isWithdrawPending}
+                      >
+                        1K
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setDepositAmount("5000")}
+                        disabled={isDepositPending || isWithdrawPending}
+                      >
+                        5K
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setDepositAmount("10000")}
+                        disabled={isDepositPending || isWithdrawPending}
+                      >
+                        10K
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setDepositAmount(usdcBalance.toString())}
+                        disabled={isDepositPending || isWithdrawPending || isBalanceLoading}
+                      >
+                        Max
+                      </Button>
+                    </div>
                     <div className="text-xs text-muted-foreground">
                       💳 Your USDC Balance: {isBalanceLoading ? "..." : `${usdcBalance.toLocaleString()} USDC`}
                     </div>

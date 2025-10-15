@@ -15,13 +15,13 @@ export const LendDrawer = ({
   apy: number;
   onConfirm: (amount: number) => Promise<void> | void;
 }) => {
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState("");
 
   useEffect(() => {
-    if (!open) setAmount(0);
+    if (!open) setAmount("");
   }, [open]);
 
-  const usd = useMemo(() => amount * PRICES_USD.STX, [amount]);
+  const usd = useMemo(() => (parseFloat(amount) || 0) * PRICES_USD.STX, [amount]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -33,7 +33,15 @@ export const LendDrawer = ({
         <div className="p-6 pt-0 space-y-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Amount (STX)</label>
-            <Input type="number" min={0} step="0.01" value={amount || ""} onChange={(e) => setAmount(parseFloat(e.target.value) || 0)} className="border-2 border-border" />
+            <Input 
+              type="number" 
+              min={0} 
+              step="0.01" 
+              value={amount} 
+              onChange={(e) => setAmount(e.target.value)} 
+              placeholder="Enter STX amount to lend"
+              className="border-2 border-border" 
+            />
             <div className="text-xs text-muted-foreground">≈ ${usd.toFixed(2)} USD</div>
           </div>
 
@@ -44,7 +52,7 @@ export const LendDrawer = ({
             </div>
           </div>
 
-          <Button variant="brutal" className="w-full" disabled={amount <= 0} onClick={() => onConfirm(amount)}>Confirm Lend</Button>
+          <Button variant="brutal" className="w-full" disabled={!amount || parseFloat(amount) <= 0} onClick={() => onConfirm(parseFloat(amount))}>Confirm Lend</Button>
         </div>
       </DialogContent>
     </Dialog>
