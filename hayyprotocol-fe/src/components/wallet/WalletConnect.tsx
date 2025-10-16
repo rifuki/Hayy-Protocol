@@ -66,7 +66,7 @@ export const WalletConnect = () => {
           ) : (
             <div className="flex gap-2 w-full">
               <Button variant="outline" className="flex-1 text-xs">
-                <div className="flex items-center">
+                <div className="flex font-bold items-center">
                   <div
                     className="w-3 h-3 rounded-full mr-2"
                     style={{ backgroundColor: "#f7931a" }}
@@ -79,6 +79,17 @@ export const WalletConnect = () => {
                 {stacksAddress
                   ? `${stacksAddress.slice(0, 6)}...${stacksAddress.slice(-4)}`
                   : "Connected"}
+              </Button>
+
+              <Button
+                variant="destructive"
+                className="flex-1 text-xs"
+                onClick={() => {
+                  disconnect();
+                  toast({ title: "Stacks wallet disconnected" });
+                }}
+              >
+                <LogOutIcon />
               </Button>
             </div>
           )}
@@ -103,8 +114,15 @@ export const WalletConnect = () => {
             />
           ) : (
             <div className="flex gap-2 w-full">
-              <Button variant="outline" className="flex-1 text-xs">
-                <div className="flex items-center">Sui</div>
+              <Button
+                variant="outline"
+                className="flex-1 text-xs"
+              >
+                <div
+                  className="w-3 h-3 rounded-full mr-2"
+                  style={{ backgroundColor: "#4DA2FF" }}
+                />
+                <div className="flex font-bold items-center">Sui</div>
               </Button>
 
               <Button variant="outline" className="flex-1 text-xs">
@@ -114,7 +132,7 @@ export const WalletConnect = () => {
               </Button>
 
               <Button
-                variant="outline"
+                variant="destructive"
                 className="flex-1 text-xs"
                 onClick={() => suiWalletDisconnect()}
               >
@@ -122,22 +140,8 @@ export const WalletConnect = () => {
               </Button>
             </div>
           )}
-
-          {(wallet || stacksConnected) && (
-            <Button
-              variant="destructive"
-              onClick={() => {
-                disconnect();
-                toast({ title: "Disconnected" });
-                setOpen(false);
-              }}
-            >
-              Disconnect
-            </Button>
-          )}
         </div>
       </DialogContent>
     </Dialog>
   );
 };
-

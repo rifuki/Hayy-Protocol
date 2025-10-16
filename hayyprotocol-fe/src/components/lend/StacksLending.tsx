@@ -377,7 +377,7 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Coins className="h-5 w-5" />
-            Stacks Lending
+            STX Collateral Deposit
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -385,10 +385,10 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
             <Wallet className="h-12 w-12 mx-auto text-gray-400" />
             <div className="space-y-2">
               <p className="text-sm text-gray-600">
-                Connect your Stacks wallet to start lending
+                Connect your Stacks wallet to deposit STX collateral
               </p>
               <p className="text-xs text-gray-500">
-                Deposit STX as collateral and borrow tokens cross-chain
+                Deposit STX as collateral to borrow USDC on Sui Network
               </p>
             </div>
             <Button onClick={connect} className="w-full">
@@ -418,7 +418,7 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Coins className="h-5 w-5" />
-          Stacks Lending
+          STX Collateral Deposit
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -451,12 +451,12 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
         )}
 
         {/* Wallet Status */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between text-sm">
-            <span>Stacks Wallet:</span>
+        <div className="p-3 bg-muted/50 rounded-lg">
+          <div className="flex items-center justify-between text-sm mb-2">
+            <span className="text-muted-foreground">Stacks Wallet</span>
             <span className="text-green-600 font-medium">Connected</span>
           </div>
-          <p className="text-xs text-gray-500 break-all">{address}</p>
+          <p className="text-sm font-mono font-medium break-all">{address}</p>
         </div>
 
         {/* Deposit Collateral */}
@@ -470,24 +470,20 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
             <Label htmlFor="sui-address" className="text-xs text-muted-foreground">
               Sui Wallet Address (where you'll borrow)
             </Label>
-            <Input
-              id="sui-address"
-              type="text"
-              placeholder="0x..."
-              value={suiAddress}
-              onChange={(e) => setSuiAddress(e.target.value)}
-              disabled={isDepositing}
-              className="font-mono text-sm"
-            />
-            {currentSuiAccount?.address ? (
-              <p className="text-xs text-green-600">
-                ✓ Auto-filled from connected Sui wallet
+            <div className="p-3 bg-muted/50 rounded-lg">
+              <p className="text-sm font-mono font-medium break-all">
+                {suiAddress || 'Not connected'}
               </p>
-            ) : (
-              <p className="text-xs text-muted-foreground">
-                Connect Sui wallet or paste address manually
-              </p>
-            )}
+              {currentSuiAccount?.address ? (
+                <p className="text-xs text-green-600 mt-1">
+                  ✓ Auto-filled from connected Sui wallet
+                </p>
+              ) : (
+                <p className="text-xs text-muted-foreground mt-1">
+                  Connect Sui wallet to auto-fill
+                </p>
+              )}
+            </div>
           </div>
 
           {/* STX Amount Input */}
@@ -519,65 +515,6 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
             </Button>
           </div>
         </div>
-
-        {/* Current STX Position */}
-        {currentSuiAccount?.address && (
-          <div className="space-y-3 border rounded-lg p-4 bg-gray-50/50">
-            <Label className="text-sm font-medium text-gray-700">
-              Your Cross-Chain Position
-            </Label>
-            
-            {positionLoading ? (
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Loading position...
-              </div>
-            ) : stxPosition ? (
-              <>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">STX Collateral:</span>
-                    <div className="text-right">
-                      <div className="font-medium">{stxPosition.stxCollateral.toFixed(6)} STX</div>
-                      <div className="text-xs text-gray-500">≈ ${(stxPosition.stxCollateral * PRICES_USD.STX).toFixed(2)}</div>
-                    </div>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">USDC Borrowed:</span>
-                    <span className="font-medium">${stxPosition.usdcBorrowed.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Available to Withdraw:</span>
-                    <div className="text-right">
-                      <div className="font-medium text-green-600">{stxPosition.maxWithdrawStx.toFixed(6)} STX</div>
-                      <div className="text-xs text-gray-500">≈ ${(stxPosition.maxWithdrawStx * PRICES_USD.STX).toFixed(2)}</div>
-                    </div>
-                  </div>
-                </div>
-                
-                {stxPosition.stxCollateral > 0 && (
-                  <Button
-                    onClick={() => setShowWithdrawModal(true)}
-                    variant="default"
-                    className="w-full"
-                    disabled={stxPosition.maxWithdrawStx <= 0}
-                  >
-                    <ArrowUpDown className="h-4 w-4 mr-2" />
-                    Withdraw STX Directly
-                  </Button>
-                )}
-                
-                {stxPosition.hasOutstandingDebt && (
-                  <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded">
-                    ⚠️ Pay off your USDC debt to unlock more collateral for withdrawal
-                  </p>
-                )}
-              </>
-            ) : (
-              <p className="text-sm text-gray-600">No position found</p>
-            )}
-          </div>
-        )}
 
         {/* Actions */}
         <div className="border-t pt-4">

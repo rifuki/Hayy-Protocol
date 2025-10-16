@@ -269,9 +269,6 @@ const Borrow = () => {
           <p className="text-muted-foreground mt-1">Borrow against your collateral across multiple blockchains.</p>
         </header>
 
-        {/* Address Checker - Help users find their collateral */}
-        <AddressChecker />
-
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="stacks" className="flex items-center gap-2">
@@ -326,6 +323,9 @@ const Borrow = () => {
               <Badge variant="secondary">High Performance</Badge>
               <Badge variant="outline">sBTC Collateral</Badge>
             </div>
+
+            {/* USDC Pool Information - Full Width */}
+            <AddressChecker />
 
             {/* User Position Overview */}
             {borrowPosition && (
@@ -421,9 +421,6 @@ const Borrow = () => {
                       disabled={isDepositingCollateral || isWithdrawingCollateral}
                       step="0.001"
                     />
-                    <div className="text-xs text-muted-foreground">
-                      💡 1 sBTC ≈ $65,000 collateral value
-                    </div>
                     <div className="text-xs text-muted-foreground">
                       🪙 Your sBTC Balance: {isSbtcBalanceLoading ? "..." : sbtcBalance ? `${sbtcBalance.toFixed(4)} sBTC` : "0.0000 sBTC"}
                     </div>
