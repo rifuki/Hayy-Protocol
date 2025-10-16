@@ -123,6 +123,33 @@ public entry fun create_sbtc_pool(
     transfer::share_object(lending_pool);
 }
 
+// Create sBTC lending pool with zero initial balance
+#[allow(lint(public_entry))]
+public entry fun create_sbtc_pool_zero(
+    apy_bps: u64,
+    ctx: &mut TxContext
+) {
+    let owner = ctx.sender();
+
+    let lending_pool = SbtcLendingPool {
+        id: object::new(ctx),
+        sbtc_balance: sui::balance::zero<MOCK_SBTC>(),
+        lender_deposits: table::new(ctx),
+        total_lent: 0,
+        accumulated_yield: 0,
+        apy_bps,
+        owner
+    };
+
+    event::emit(EventLendingPoolCreated {
+        pool_id: object::id(&lending_pool),
+        apy_bps: lending_pool.apy_bps,
+        owner
+    });
+
+    transfer::share_object(lending_pool);
+}
+
 #[allow(lint(public_entry))]
 public entry fun deposit_sbtc(
     pool: &mut SbtcLendingPool,

@@ -8,7 +8,9 @@ use stacklend::mock_sbtc::MOCK_SBTC;
 //  ERROR CODES
 // ========================================
 const E_NOT_ADMIN: u64 = 201;
+#[allow(unused_const)]
 const E_FAUCET_EMPTY: u64 = 202;
+#[allow(unused_const)]
 const E_AMOUNT_TOO_LARGE: u64 = 203;
 const E_DAILY_LIMIT_EXCEEDED: u64 = 204;
 const E_COOLDOWN_ACTIVE: u64 = 205;
@@ -122,6 +124,7 @@ public fun set_faucet_active(
 // ========================================
 
 /// Mint USDC tokens
+#[allow(lint(self_transfer))]
 public fun mint_usdc(
     pool: &mut FaucetPool,
     amount: u64,
@@ -163,6 +166,7 @@ public fun mint_usdc(
 }
 
 /// Mint sBTC tokens
+#[allow(lint(self_transfer))]
 public fun mint_sbtc(
     pool: &mut FaucetPool,
     amount: u64,
@@ -206,7 +210,7 @@ public fun mint_sbtc(
 // ========================================
 //  HELPER FUNCTIONS
 // ========================================
-
+#[allow(unused_function)]
 fun check_cooldown(
     time_table: &Table<address, u64>,
     user: address,
@@ -218,6 +222,7 @@ fun check_cooldown(
     }
 }
 
+#[allow(unused_function)]
 fun check_and_update_daily_usage(
     usage_table: &mut Table<address, DailyUsage>,
     user: address,

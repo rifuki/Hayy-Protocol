@@ -9,7 +9,7 @@ plan:
     - id: 0
       transactions:
         - contract-publish:
-            contract-name: collateral-v5
+            contract-name: collateral-v6
             expected-sender: ST1WVZNYKMK1MS2V2B728ZWJ2C76TAN49C6HSY7JF
             cost: 55560
             path: contracts/collateral-v1.clar

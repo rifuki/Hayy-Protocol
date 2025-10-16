@@ -44,6 +44,8 @@ const COLLATERAL_TYPE_STX_STACKS: u8 = 3;
 public struct BORROW_CONTROLLER has drop {}
 
 // Global registry for all borrow positions
+
+#[allow(lint(coin_field))]
 public struct BorrowRegistry has key {
     id: UID,
     // Positions stored as dynamic fields with user address as key

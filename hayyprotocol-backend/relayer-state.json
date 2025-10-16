@@ -1,5 +1,5 @@
 {
-  "lastStacksBlock": 3604285,
+  "lastStacksBlock": 3604404,
   "processedEvents": {
     "0xfb5b436f4c8d455c9056718cbc44b643dc8e1eba281313ce154939cd54c801a9:deposit": {
       "txHash": "0xfb5b436f4c8d455c9056718cbc44b643dc8e1eba281313ce154939cd54c801a9",
@@ -239,6 +239,18 @@
       "txHash": "0xfed3e1939a05d432db25efe12e0c4787bab9a59de12dd3aa78b93d236f09736d",
       "suiTxDigest": "BXtBymvjwdJwsXLuoJ6iBYv5bFC6HuXREMMcMs8gkcd7",
       "timestamp": 1760594905849,
+      "status": "success"
+    },
+    "0x45928429f172f2bdbc6e59e7ccadf0a3617955d317a8e830b60af72aac045d81:deposit": {
+      "txHash": "0x45928429f172f2bdbc6e59e7ccadf0a3617955d317a8e830b60af72aac045d81",
+      "suiTxDigest": "5gr9oDgYYD6udK4Fes8GHAmyCoP35otvgrxeYsp6Yevn",
+      "timestamp": 1760598637703,
+      "status": "success"
+    },
+    "0x6f4dd8ea43573ca3fb3a8e0f0adf6a6fb28534894364a103ddd4c0218e0d328a:deposit": {
+      "txHash": "0x6f4dd8ea43573ca3fb3a8e0f0adf6a6fb28534894364a103ddd4c0218e0d328a",
+      "suiTxDigest": "3J9y4LDAY1vyubZLgoGDZ9ZunPghyE1DGu9754wgc3it",
+      "timestamp": 1760598677666,
       "status": "success"
     }
   },
