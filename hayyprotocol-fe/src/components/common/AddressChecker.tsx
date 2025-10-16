@@ -131,7 +131,7 @@ export function AddressChecker({ onAddressSuggestion }: AddressCheckerProps) {
         {result && !checking && (
           <div className="space-y-4">
             {/* Current Address Has Collateral */}
-            {result.position && (
+            {result.position && result.position.stxCollateral > 0 && (
               <Alert>
                 <CheckCircle className="h-4 w-4" />
                 <AlertDescription>
@@ -151,7 +151,7 @@ export function AddressChecker({ onAddressSuggestion }: AddressCheckerProps) {
             )}
 
             {/* No Collateral + Suggestions */}
-            {!result.position && result.suggestions && result.suggestions.length > 0 && (
+            {(!result.position || result.position.stxCollateral === 0) && result.suggestions && result.suggestions.length > 0 && (
               <Alert variant="destructive">
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription>
@@ -164,7 +164,7 @@ export function AddressChecker({ onAddressSuggestion }: AddressCheckerProps) {
             {result.suggestions && result.suggestions.length > 0 && (
               <div className="space-y-2">
                 <h4 className="text-sm font-medium">
-                  {result.position ? 'Other Available Addresses:' : 'Switch to one of these addresses:'}
+                  {result.position && result.position.stxCollateral > 0 ? 'Other Available Addresses:' : 'Switch to one of these addresses:'}
                 </h4>
                 {result.suggestions.map((suggestion, index) => (
                   <div
@@ -228,10 +228,10 @@ export function AddressChecker({ onAddressSuggestion }: AddressCheckerProps) {
             )}
 
             {/* No Suggestions */}
-            {!result.position && (!result.suggestions || result.suggestions.length === 0) && (
+            {(!result.position || result.position.stxCollateral === 0) && (!result.suggestions || result.suggestions.length === 0) && (
               <Alert>
                 <AlertDescription>
-                  No collateral found for any address. Deposit STX on Stacks first.
+                  No collateral found for this address. Deposit STX on Stacks to get started.
                 </AlertDescription>
               </Alert>
             )}

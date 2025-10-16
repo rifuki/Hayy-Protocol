@@ -1,5 +1,5 @@
 {
-  "lastStacksBlock": 3604601,
+  "lastStacksBlock": 3604620,
   "processedEvents": {
     "0xfb5b436f4c8d455c9056718cbc44b643dc8e1eba281313ce154939cd54c801a9:deposit": {
       "txHash": "0xfb5b436f4c8d455c9056718cbc44b643dc8e1eba281313ce154939cd54c801a9",
@@ -317,6 +317,12 @@
       "txHash": "0x348d31c60dba215c0dedacbcadaec2cb4012bc136193d12f21b1ac5c54685645",
       "suiTxDigest": "Crzn8G2ew4YSGJcFo1chpwpM4zGwYwMh2JjryVKtJ3bp",
       "timestamp": 1760604601666,
+      "status": "success"
+    },
+    "0xf0e691999a8de5d05b875069eaf302f3bdb4679ea6a9923c686eef79037c07af:deposit": {
+      "txHash": "0xf0e691999a8de5d05b875069eaf302f3bdb4679ea6a9923c686eef79037c07af",
+      "suiTxDigest": "EdqBNMuQr7rVrxri5zMmKFSpspcmxpHBRrh7BSwz9BYG",
+      "timestamp": 1760605502049,
       "status": "success"
     }
   },

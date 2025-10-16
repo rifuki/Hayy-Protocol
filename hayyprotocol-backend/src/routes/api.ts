@@ -410,41 +410,28 @@ export function setupAPIRoutes(app: Hono) {
   // Suggest correct address for user (reverse lookup + suggestions)
   app.get('/api/suggest/:suiAddress', async (c) => {
     const suiAddress = c.req.param('suiAddress');
-    
+
     try {
       // Check if current address has position
       const currentPosition = await fetchPositionFromSui(suiAddress);
-      
+
       if (currentPosition) {
         return c.json({
           success: true,
           message: 'Current address already has collateral',
           currentAddress: suiAddress,
-          position: currentPosition
+          position: currentPosition,
+          suggestions: [] // No suggestions needed
         });
       }
 
-      // Get all positions and suggest alternatives
-      const state = await getRelayerState();
-      const suggestions = [];
-
-      for (const [stacksAddr, mappedSuiAddr] of Object.entries(state.addressMappings)) {
-        const position = await fetchPositionFromSui(mappedSuiAddr);
-        if (position && position.stxCollateral > 0) {
-          suggestions.push({
-            stacksAddress: stacksAddr,
-            suiAddress: mappedSuiAddr,
-            stxCollateral: position.stxCollateral,
-            borrowPower: position.borrowPower
-          });
-        }
-      }
-
+      // IMPORTANT: Don't suggest other users' addresses
+      // Only return empty suggestions since we don't want to expose all positions
       return c.json({
         success: true,
         message: 'No collateral found at current address',
         currentAddress: suiAddress,
-        suggestions
+        suggestions: [] // Don't expose other users' positions
       });
     } catch (error) {
       logger.error({ error }, 'Suggest error');
