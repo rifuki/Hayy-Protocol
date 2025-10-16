@@ -63,15 +63,9 @@ export function useCollateralStatus(
       }
     },
     enabled: !!stacksAddress && enabled,
-    // Smart polling with exponential backoff
+    // Keep polling while enabled (parent controls when to stop)
     refetchInterval: (query) => {
       const data = query.state.data;
-      
-      // Stop polling once registered - IMPORTANT!
-      if (data?.status === 'registered') {
-        console.log('✅ Stopping polling - collateral registered');
-        return false;
-      }
       
       // Stop polling on error
       if (data?.status === 'error') {
@@ -84,7 +78,8 @@ export function useCollateralStatus(
         return false;
       }
       
-      // Poll every 2 seconds while pending
+      // Continue polling every 2 seconds (even if registered)
+      // Parent component will disable polling via 'enabled' prop when done
       console.log('🔄 Polling for collateral status...');
       return 2000;
     },

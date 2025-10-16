@@ -41,6 +41,7 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
   const [depositedStacksAddress, setDepositedStacksAddress] = useState<string | null>(null);
   const [depositTxId, setDepositTxId] = useState<string | null>(null);
   const [initialCollateral, setInitialCollateral] = useState<number>(0);
+  const [lastKnownCollateral, setLastKnownCollateral] = useState<number>(0);
 
   // Clear amounts when disconnected
   useEffect(() => {
@@ -56,6 +57,14 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
       setSuiAddress(currentSuiAccount.address);
     }
   }, [currentSuiAccount]);
+
+  // Track collateral changes from API (but ONLY update when not depositing)
+  useEffect(() => {
+    if (stxPosition?.stxCollateral !== undefined && !isDepositing && !showProcessingBanner) {
+      console.log('📊 Updating lastKnownCollateral to:', stxPosition.stxCollateral);
+      setLastKnownCollateral(stxPosition.stxCollateral);
+    }
+  }, [stxPosition?.stxCollateral, isDepositing, showProcessingBanner]);
 
   // Format amounts for display
   const formatAmount = (amount: number, decimals = 6) => {
@@ -105,11 +114,16 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
     }
 
     setIsDepositing(true);
+    
     try {
       // Convert STX to microSTX (1 STX = 1,000,000 microSTX)
       const microSTX = Math.floor(
         parseFloat(collateralAmount) * 1_000_000,
       ).toString();
+
+      // CRITICAL: Use frozen lastKnownCollateral instead of live stxPosition
+      const collateralSnapshot = lastKnownCollateral;
+      console.log('� Snapshot collateral BEFORE tx:', collateralSnapshot, 'stxPosition:', stxPosition);
 
       await depositCollateral(
         microSTX,
@@ -122,8 +136,9 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
             duration: 5000,
           });
           
-          // Save current collateral amount BEFORE this deposit
-          setInitialCollateral(stxPosition?.stxCollateral || 0);
+          // NOW set the initial collateral from snapshot (not from current stxPosition which might be stale)
+          console.log('💰 Setting initialCollateral to:', collateralSnapshot);
+          setInitialCollateral(collateralSnapshot);
           
           // Clear input & show processing banner for ALL deposits
           setCollateralAmount("");
@@ -416,13 +431,15 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
               // Refetch position data when registration complete
               refetchPosition();
               
-              // Hide banner after completion
+              // Calculate deposit amount BEFORE resetting
+              const depositAmount = (newCollateral || 0) - initialCollateral;
+              console.log('✅ Deposit complete! Initial:', initialCollateral, 'New:', newCollateral, 'Added:', depositAmount);
+              
+              // Hide banner and RESET all state
               setShowProcessingBanner(false);
               setDepositedStacksAddress(null);
               setDepositTxId(null);
-              
-              // Calculate deposit amount
-              const depositAmount = (newCollateral || 0) - initialCollateral;
+              setInitialCollateral(0); // Reset for next deposit
               
               toast({
                 title: "🎉 Collateral Registered!",

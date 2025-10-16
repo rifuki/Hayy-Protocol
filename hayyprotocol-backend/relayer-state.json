@@ -1,5 +1,5 @@
 {
-  "lastStacksBlock": 3604520,
+  "lastStacksBlock": 3604601,
   "processedEvents": {
     "0xfb5b436f4c8d455c9056718cbc44b643dc8e1eba281313ce154939cd54c801a9:deposit": {
       "txHash": "0xfb5b436f4c8d455c9056718cbc44b643dc8e1eba281313ce154939cd54c801a9",
@@ -263,6 +263,60 @@
       "txHash": "0x47e87112831cdbc4adceb968b83b07f4700a801a45e28ff6791535e3bdddc25a",
       "suiTxDigest": "JBLUwgEa67PXnab6P1FEtAxyDRi5aRC66zmPsu7LgEsq",
       "timestamp": 1760602146121,
+      "status": "success"
+    },
+    "0x83ad9d792cad68c37daa6d7555e19409294a27abdc890a4c1e6f935895ae2215:deposit": {
+      "txHash": "0x83ad9d792cad68c37daa6d7555e19409294a27abdc890a4c1e6f935895ae2215",
+      "suiTxDigest": "djrzEvGjkZzEECxnLgiha5Ln48C5dLapccGZLRusdJq",
+      "timestamp": 1760602688070,
+      "status": "success"
+    },
+    "0x578474a7ece13ff278626bff27c21d6f389c09fe50285227b73e9225ed9c2711:deposit": {
+      "txHash": "0x578474a7ece13ff278626bff27c21d6f389c09fe50285227b73e9225ed9c2711",
+      "suiTxDigest": "EeNLvX2iYTnrRgJ7uhhh74nfaD6ZJ5Erz5j1NfwTHgq9",
+      "timestamp": 1760602924136,
+      "status": "success"
+    },
+    "0x48022b49a275521022ad1dffd8e8f55de82cdd60a3086cb2526a8e32badced0e:deposit": {
+      "txHash": "0x48022b49a275521022ad1dffd8e8f55de82cdd60a3086cb2526a8e32badced0e",
+      "suiTxDigest": "FTsx7zRoHhJE8GCCKit8iHBTcWxgfdD9CvaY64ctdhWL",
+      "timestamp": 1760603083651,
+      "status": "success"
+    },
+    "0x46a6c7b8077287dbfda22b25154955c564af6f562466fecb79fcae00c6392324:deposit": {
+      "txHash": "0x46a6c7b8077287dbfda22b25154955c564af6f562466fecb79fcae00c6392324",
+      "suiTxDigest": "6JbCbtj88LF8UgWEw2W2Pry9VjNM5rZAj9c5c3ReJddd",
+      "timestamp": 1760603258492,
+      "status": "success"
+    },
+    "0xa72377ad20981020a83347ca83f042f7396adf04b87760aaab1b02bc01220ccd:deposit": {
+      "txHash": "0xa72377ad20981020a83347ca83f042f7396adf04b87760aaab1b02bc01220ccd",
+      "suiTxDigest": "4mCXKSQThvfbH8qKVu6SsJg9iJhkVvrYLJtnVJ7Y4zGj",
+      "timestamp": 1760603463758,
+      "status": "success"
+    },
+    "0x75a35d58177b0c4e41b90c6520f33926f4b99f9bf8e7d0300532f3cb80608cb0:deposit": {
+      "txHash": "0x75a35d58177b0c4e41b90c6520f33926f4b99f9bf8e7d0300532f3cb80608cb0",
+      "suiTxDigest": "FBGf8SyExiFuMHVXhmR37cygMJtj2PmoibFupo3AziF3",
+      "timestamp": 1760603674577,
+      "status": "success"
+    },
+    "0x0a0027cf0dd2fa15279e0ef9ec54faa6d373ebfd2ab65451332bc9774a6e2376:deposit": {
+      "txHash": "0x0a0027cf0dd2fa15279e0ef9ec54faa6d373ebfd2ab65451332bc9774a6e2376",
+      "suiTxDigest": "LQqwoncFJkJ27i5xPyHmvr3K9XJTsJZwHsk1T3zFz6n",
+      "timestamp": 1760604053994,
+      "status": "success"
+    },
+    "0x96dd06e2df5873685f911ffd9e357e1c128ac6f85c20a7863a540f3d258443be:deposit": {
+      "txHash": "0x96dd06e2df5873685f911ffd9e357e1c128ac6f85c20a7863a540f3d258443be",
+      "suiTxDigest": "B6otgWZybFExa2gCfvC2hp2fpWDW97wqkt6smRxj2jpp",
+      "timestamp": 1760604228932,
+      "status": "success"
+    },
+    "0x348d31c60dba215c0dedacbcadaec2cb4012bc136193d12f21b1ac5c54685645:deposit": {
+      "txHash": "0x348d31c60dba215c0dedacbcadaec2cb4012bc136193d12f21b1ac5c54685645",
+      "suiTxDigest": "Crzn8G2ew4YSGJcFo1chpwpM4zGwYwMh2JjryVKtJ3bp",
+      "timestamp": 1760604601666,
       "status": "success"
     }
   },

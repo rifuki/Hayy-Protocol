@@ -36,6 +36,7 @@ export function ProcessingBanner({
       // This means the NEW deposit has been processed!
       if (currentCollateral > initialCollateral && !hasDetectedIncrease) {
         setHasDetectedIncrease(true);
+        setProgress(100); // Set progress to 100% when increase detected
         onComplete?.(currentCollateral);
         const timer = setTimeout(() => {
           setHidden(true);
@@ -109,8 +110,46 @@ export function ProcessingBanner({
     );
   }
 
-  // Registered - Success!
+  // Registered - Only show success if collateral has increased!
   if (status?.status === 'registered') {
+    const currentCollateral = status.collateral?.stxAmount || 0;
+    
+    // DEBUG: Log values for troubleshooting
+    console.log('🔍 ProcessingBanner Debug:', {
+      currentCollateral,
+      initialCollateral,
+      hasDetectedIncrease,
+      difference: currentCollateral - initialCollateral
+    });
+    
+    // If collateral hasn't increased yet, show as pending (still processing)
+    if (currentCollateral <= initialCollateral && !hasDetectedIncrease) {
+      return (
+        <Alert className="animate-in slide-in-from-top-5 bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
+          <Clock className="h-4 w-4 text-blue-600 dark:text-blue-400 animate-pulse" />
+          <AlertDescription className="space-y-3">
+            <div>
+              <strong className="text-blue-900 dark:text-blue-100">
+                ⏳ Processing Your Deposit
+              </strong>
+              <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                Waiting for relayer to process your new deposit...
+              </p>
+            </div>
+            
+            {/* Progress bar */}
+            <div className="space-y-1">
+              <Progress value={progress} className="h-2" />
+              <p className="text-xs text-blue-600 dark:text-blue-400">
+                Registering collateral increase on Sui...
+              </p>
+            </div>
+          </AlertDescription>
+        </Alert>
+      );
+    }
+    
+    // Only show success when increase is detected
     return (
       <Alert className="animate-in slide-in-from-top-5 bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800">
         <Zap className="h-4 w-4 text-green-600 dark:text-green-400" />

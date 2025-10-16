@@ -469,23 +469,28 @@ export function setupAPIRoutes(app: Hono) {
         }, 400);
       }
 
-      // ⚡ QUICK CHECK: Recently registered? Return immediately!
+      // ⚡ QUICK CHECK: Recently registered? Fetch actual position from Sui!
       const recentReg = recentRegistrations.get(stacksAddress);
       if (recentReg) {
         const age = Date.now() - recentReg.timestamp;
         logger.info({ stacksAddress, age, txDigest: recentReg.suiTxDigest }, 'Found recent registration in cache!');
         
-        return c.json({
-          status: 'registered',
-          message: 'Collateral successfully registered! You can now borrow.',
-          stacksAddress,
-          suiAddress: recentReg.suiAddress,
-          collateral: {
-            stxAmount: recentReg.amount / 1_000_000, // Convert microSTX to STX
-            borrowPower: (recentReg.amount / 1_000_000) * 0.7, // 70% LTV
-            objectId: recentReg.suiTxDigest // Use tx digest as placeholder
-          }
-        });
+        // Fetch ACTUAL position from Sui instead of using cached deposit amount
+        const position = await fetchPositionFromSui(recentReg.suiAddress);
+        if (position && position.stxCollateral > 0) {
+          return c.json({
+            status: 'registered',
+            message: 'Collateral successfully registered! You can now borrow.',
+            stacksAddress,
+            suiAddress: recentReg.suiAddress,
+            collateral: {
+              stxAmount: position.stxCollateral, // Use TOTAL collateral, not deposit amount
+              borrowPower: position.borrowPower,
+              objectId: position.objectId
+            }
+          });
+        }
+        // If position not found yet, fallthrough to normal check
       }
 
       const state = await getRelayerState();
