@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { serve } from '@hono/node-server';
-import { config } from './config.js';
+import { config, CORS_ORIGINS } from './config.js';
 import { setupRelayer } from './relayer.js';
 import { setupAPIRoutes } from './routes/api.js';
 import pino from 'pino';
@@ -10,9 +10,9 @@ const logger = pino({ level: config.LOG_LEVEL });
 
 const app = new Hono();
 
-// Enable CORS
+// Enable CORS from environment variable
 app.use('/*', cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:8080', 'http://localhost:8081', 'https://hayyprotocol.vercel.app'],
+  origin: CORS_ORIGINS,
   allowHeaders: ['Content-Type', 'Authorization'],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 }));
