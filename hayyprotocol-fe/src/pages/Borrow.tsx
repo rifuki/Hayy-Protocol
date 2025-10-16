@@ -24,7 +24,6 @@ import { useUsdcBalance } from "@/features/common/hooks/useUsdcBalance";
 import { useSbtcBalance } from "@/features/common/hooks/useSbtcBalance";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { Coins, TrendingUp, Info, AlertTriangle, Shield, DollarSign, ArrowUpDown } from "lucide-react";
-import { StacksLending } from "@/components/lend/StacksLending";
 import { AddressChecker } from "@/components/common/AddressChecker";
 
 const Borrow = () => {
@@ -289,17 +288,36 @@ const Borrow = () => {
           <TabsContent value="stacks" className="space-y-4">
             <div className="flex items-center gap-2 mb-4">
               <Badge variant="secondary">Bitcoin Security</Badge>
-              <Badge variant="default">STX Collateral</Badge>
+              <Badge variant="outline">Coming Soon</Badge>
             </div>
 
-            <Alert>
-              <Info className="h-4 w-4" />
-              <AlertDescription>
-                Deposit STX as collateral on Stacks. Borrow USDC on Sui Network.
-              </AlertDescription>
-            </Alert>
+            <Card className="border-2 border-dashed">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Coins className="h-5 w-5 text-muted-foreground" />
+                  Stacks Network Borrowing
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Alert>
+                  <Info className="h-4 w-4" />
+                  <AlertDescription>
+                    <strong>Coming Soon!</strong> Direct borrowing on Stacks Network is currently under development.
+                    <br /><br />
+                    For now, you can:
+                    <ul className="list-disc list-inside mt-2 space-y-1">
+                      <li>Deposit STX collateral on the <strong>Lend</strong> page</li>
+                      <li>Use <strong>Sui Network</strong> tab to borrow USDC against your STX collateral</li>
+                    </ul>
+                  </AlertDescription>
+                </Alert>
 
-            <StacksLending />
+                <div className="text-center py-8 text-muted-foreground">
+                  <p className="text-lg font-medium">🚧 Feature Under Development</p>
+                  <p className="text-sm mt-2">Stay tuned for updates!</p>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Sui Tab */}
@@ -325,8 +343,16 @@ const Borrow = () => {
                       <div className="text-2xl font-bold">
                         ${borrowPosition.totalCollateralUsd.toLocaleString()}
                       </div>
-                      <div className="text-xs text-muted-foreground">
-                        {borrowPosition.sbtcCollateralSui.toFixed(4)} sBTC on Sui
+                      <div className="text-xs text-muted-foreground space-y-0.5">
+                        {borrowPosition.stxCollateralStacks > 0 && (
+                          <div>{borrowPosition.stxCollateralStacks.toFixed(2)} STX on Stacks</div>
+                        )}
+                        {borrowPosition.sbtcCollateralSui > 0 && (
+                          <div>{borrowPosition.sbtcCollateralSui.toFixed(4)} sBTC on Sui</div>
+                        )}
+                        {borrowPosition.stxCollateralStacks === 0 && borrowPosition.sbtcCollateralSui === 0 && (
+                          <div>No collateral deposited</div>
+                        )}
                       </div>
                     </div>
                     <div className="space-y-1">

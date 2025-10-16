@@ -2,6 +2,7 @@ import { BORROW_REGISTRY_ID } from "@/constants/contract/sui";
 import { useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
 import { useQuery } from "@tanstack/react-query";
 import { hayyProtocolAPI } from "@/lib/api";
+import { PRICES_USD } from "@/data/tokens";
 
 export interface BorrowPosition {
   borrower: string;
@@ -45,10 +46,11 @@ export function useBorrowPosition() {
               debtOpenedAt: 0,
               lastInterestUpdate: 0,
               isLiquidatable: apiResponse.position.isLiquidatable,
-              totalCollateralUsd: apiResponse.position.stxCollateral * 0.5 + apiResponse.position.sbtcCollateral * 65000,
-              maxBorrowUsd: apiResponse.position.borrowPower * 0.5, // Convert STX to USD
-              healthFactor: apiResponse.position.usdcBorrowed > 0 ? 
-                (apiResponse.position.stxCollateral * 0.5 + apiResponse.position.sbtcCollateral * 65000) / apiResponse.position.usdcBorrowed : 999,
+              totalCollateralUsd: apiResponse.position.stxCollateral * PRICES_USD.STX + apiResponse.position.sbtcCollateral * PRICES_USD.sBTC,
+              // Calculate max borrow (70% LTV for both sBTC and STX)
+              maxBorrowUsd: (apiResponse.position.stxCollateral * PRICES_USD.STX + apiResponse.position.sbtcCollateral * PRICES_USD.sBTC) * 0.7,
+              healthFactor: apiResponse.position.usdcBorrowed > 0 ?
+                (apiResponse.position.stxCollateral * PRICES_USD.STX + apiResponse.position.sbtcCollateral * PRICES_USD.sBTC) / apiResponse.position.usdcBorrowed : 999,
             };
             
             console.log("Processed API position:", position);
@@ -117,9 +119,9 @@ export function useBorrowPosition() {
 
             console.log("BorrowPosition fields:", positionFields);
 
-            // Mock prices for calculation (in production, get from registry)
-            const sbtcPriceUsd = 65000; // $65,000
-            const stxPriceUsd = 0.5; // $0.5 (match backend API price)
+            // Use centralized prices from PRICES_USD
+            const sbtcPriceUsd = PRICES_USD.sBTC;
+            const stxPriceUsd = PRICES_USD.STX;
 
             const sbtcCollateralSui =
               parseInt(positionFields.sbtc_collateral_sui || "0") / 100_000_000; // sBTC has 8 decimals
