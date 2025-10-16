@@ -256,7 +256,7 @@ export async function startRelayer(): Promise<void> {
  * Setup and start the relayer as background service
  */
 export function setupRelayer(): () => void {
-  logger.info('🚀 Starting StackLend Relayer');
+  logger.info('🚀 Starting HayyProtocol Relayer');
   
   // Initialize state
   state = loadState();

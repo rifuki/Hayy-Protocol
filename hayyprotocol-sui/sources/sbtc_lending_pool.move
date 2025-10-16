@@ -1,7 +1,7 @@
-module stacklend::sbtc_lending_pool;
+module hayyprotocol::sbtc_lending_pool;
 
 use sui::{balance::Balance, coin::{Self, Coin}, display, event, package, table::{Self, Table}};
-use stacklend::mock_sbtc::MOCK_SBTC;
+use hayyprotocol::mock_sbtc::MOCK_SBTC;
 
 const E_INVALID_AMOUNT: u64 = 101;
 const E_NOT_MATCHING_POOL: u64 = 102;

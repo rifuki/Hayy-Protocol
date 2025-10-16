@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useCurrentAccount } from '@mysten/dapp-kit';
-import { stackLendAPI } from '@/lib/api';
+import { hayyProtocolAPI } from '@/lib/api';
 
 interface STXPosition {
   stxCollateral: number;
@@ -25,7 +25,7 @@ export const useSTXPosition = () => {
     setError(null);
 
     try {
-      const result = await stackLendAPI.getPositionBySuiAddress(currentAccount.address);
+      const result = await hayyProtocolAPI.getPositionBySuiAddress(currentAccount.address);
 
       if (result.success && result.position) {
         const pos = result.position;

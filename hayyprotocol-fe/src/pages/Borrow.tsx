@@ -263,7 +263,7 @@ const Borrow = () => {
 
   return (
     <>
-      <SEO title="StackLend — Borrow" description="Borrow assets against your collateral. Cross-chain borrowing available." canonical="/borrow" />
+      <SEO title="HayyProtocol — Borrow" description="Borrow assets against your collateral. Cross-chain borrowing available." canonical="/borrow" />
       <section className="space-y-6 animate-enter">
         <header>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Borrow Assets</h1>

@@ -1,7 +1,7 @@
-module stacklend::usdc_lending_pool;
+module hayyprotocol::usdc_lending_pool;
 
 use sui::{balance::{Self, Balance}, coin::{Self, Coin}, display, event, package, table::{Self, Table}};
-use stacklend::mock_usdc::MOCK_USDC;
+use hayyprotocol::mock_usdc::MOCK_USDC;
 
 const E_INVALID_AMOUNT: u64 = 101;
 const E_NOT_MATCHING_POOL: u64 = 102;

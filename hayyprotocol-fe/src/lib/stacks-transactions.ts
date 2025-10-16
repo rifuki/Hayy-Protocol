@@ -29,8 +29,8 @@ export interface ContractCallOptions {
   onCancel?: () => void;
 }
 
-// StackLend Protocol Contract Addresses
-export const STACKLEND_CONTRACTS = {
+// HayyProtocol Contract Addresses
+export const HAYYPROTOCOL_CONTRACTS = {
   COLLATERAL: {
     address: STACKS_CONFIG.contractAddress,
     name: STACKS_CONFIG.collateralContractName,
@@ -71,7 +71,7 @@ const callContract = async (options: ContractCallOptions): Promise<void> => {
       functionName,
       functionArgs,
       appDetails: {
-        name: "StackLend",
+        name: "HayyProtocol",
         icon: window.location.origin + "/favicon.ico",
       },
       // Provide userSession when available to ensure proper wallet routing
@@ -117,8 +117,8 @@ export const depositCollateral = async (
   onCancel?: () => void,
 ): Promise<void> => {
   return callContract({
-    contractAddress: STACKLEND_CONTRACTS.COLLATERAL.address,
-    contractName: STACKLEND_CONTRACTS.COLLATERAL.name,
+    contractAddress: HAYYPROTOCOL_CONTRACTS.COLLATERAL.address,
+    contractName: HAYYPROTOCOL_CONTRACTS.COLLATERAL.name,
     functionName: "deposit-collateral",
     functionArgs: [
       uintCV(amount), // amount in microSTX
@@ -135,8 +135,8 @@ export const requestWithdraw = async (
   onCancel?: () => void,
 ): Promise<void> => {
   return callContract({
-    contractAddress: STACKLEND_CONTRACTS.COLLATERAL.address,
-    contractName: STACKLEND_CONTRACTS.COLLATERAL.name,
+    contractAddress: HAYYPROTOCOL_CONTRACTS.COLLATERAL.address,
+    contractName: HAYYPROTOCOL_CONTRACTS.COLLATERAL.name,
     functionName: STACKS_FUNCTIONS.REQUEST_WITHDRAW,
     functionArgs: [uintCV(amount)],
     onFinish,
@@ -152,8 +152,8 @@ export const lendAsset = async (
   onCancel?: () => void,
 ): Promise<void> => {
   return callContract({
-    contractAddress: STACKLEND_CONTRACTS.LENDING.address,
-    contractName: STACKLEND_CONTRACTS.LENDING.name,
+    contractAddress: HAYYPROTOCOL_CONTRACTS.LENDING.address,
+    contractName: HAYYPROTOCOL_CONTRACTS.LENDING.name,
     functionName: "lend",
     functionArgs: [
       stringAsciiCV(tokenId), // Token identifier (e.g., "USDC", "USDT", "WBTC")
@@ -177,8 +177,8 @@ export const borrowCrossChain = async (
   onCancel?: () => void,
 ): Promise<void> => {
   return callContract({
-    contractAddress: STACKLEND_CONTRACTS.COLLATERAL.address,
-    contractName: STACKLEND_CONTRACTS.COLLATERAL.name,
+    contractAddress: HAYYPROTOCOL_CONTRACTS.COLLATERAL.address,
+    contractName: HAYYPROTOCOL_CONTRACTS.COLLATERAL.name,
     functionName: "borrow-cross-chain",
     functionArgs: [
       stringAsciiCV(tokenSymbol),
@@ -198,8 +198,8 @@ export const signalRepayment = async (
   onCancel?: () => void,
 ): Promise<void> => {
   return callContract({
-    contractAddress: STACKLEND_CONTRACTS.COLLATERAL.address,
-    contractName: STACKLEND_CONTRACTS.COLLATERAL.name,
+    contractAddress: HAYYPROTOCOL_CONTRACTS.COLLATERAL.address,
+    contractName: HAYYPROTOCOL_CONTRACTS.COLLATERAL.name,
     functionName: "signal-repayment",
     functionArgs: [
       stringAsciiCV(tokenSymbol),
@@ -218,8 +218,8 @@ export const initAdmin = async (
   onCancel?: () => void,
 ): Promise<void> => {
   return callContract({
-    contractAddress: STACKLEND_CONTRACTS.COLLATERAL.address,
-    contractName: STACKLEND_CONTRACTS.COLLATERAL.name,
+    contractAddress: HAYYPROTOCOL_CONTRACTS.COLLATERAL.address,
+    contractName: HAYYPROTOCOL_CONTRACTS.COLLATERAL.name,
     functionName: "init-admin",
     functionArgs: [],
     userSession,
@@ -239,8 +239,8 @@ export const addToken = async (
   onCancel?: () => void,
 ): Promise<void> => {
   return callContract({
-    contractAddress: STACKLEND_CONTRACTS.COLLATERAL.address,
-    contractName: STACKLEND_CONTRACTS.COLLATERAL.name,
+    contractAddress: HAYYPROTOCOL_CONTRACTS.COLLATERAL.address,
+    contractName: HAYYPROTOCOL_CONTRACTS.COLLATERAL.name,
     functionName: "add-token",
     functionArgs: [
       stringAsciiCV(tokenId),
@@ -262,8 +262,8 @@ export const depositLending = async (
   onCancel?: () => void,
 ): Promise<void> => {
   return callContract({
-    contractAddress: STACKLEND_CONTRACTS.LENDING.address,
-    contractName: STACKLEND_CONTRACTS.LENDING.name,
+    contractAddress: HAYYPROTOCOL_CONTRACTS.LENDING.address,
+    contractName: HAYYPROTOCOL_CONTRACTS.LENDING.name,
     functionName: "deposit-lend-collateral",
     functionArgs: [
       uintCV(amount), // Amount to lend
@@ -283,8 +283,8 @@ export const withdrawLending = async (
   onCancel?: () => void,
 ): Promise<void> => {
   return callContract({
-    contractAddress: STACKLEND_CONTRACTS.LENDING.address,
-    contractName: STACKLEND_CONTRACTS.LENDING.name,
+    contractAddress: HAYYPROTOCOL_CONTRACTS.LENDING.address,
+    contractName: HAYYPROTOCOL_CONTRACTS.LENDING.name,
     functionName: "withdraw-lend-collateral",
     functionArgs: [
       uintCV(amount), // Amount to withdraw
@@ -315,8 +315,8 @@ export const adminUnlockCollateral = async (
   onCancel?: () => void,
 ): Promise<void> => {
   return callContract({
-    contractAddress: STACKLEND_CONTRACTS.COLLATERAL.address,
-    contractName: STACKLEND_CONTRACTS.COLLATERAL.name,
+    contractAddress: HAYYPROTOCOL_CONTRACTS.COLLATERAL.address,
+    contractName: HAYYPROTOCOL_CONTRACTS.COLLATERAL.name,
     functionName: "admin-unlock-collateral",
     functionArgs: [
       principalCV(userAddress), // User principal
@@ -343,8 +343,8 @@ export const adminEmergencyWithdraw = async (
   onCancel?: () => void,
 ): Promise<void> => {
   return callContract({
-    contractAddress: STACKLEND_CONTRACTS.COLLATERAL.address,
-    contractName: STACKLEND_CONTRACTS.COLLATERAL.name,
+    contractAddress: HAYYPROTOCOL_CONTRACTS.COLLATERAL.address,
+    contractName: HAYYPROTOCOL_CONTRACTS.COLLATERAL.name,
     functionName: "admin-emergency-withdraw",
     functionArgs: [
       principalCV(recipient), // Recipient principal

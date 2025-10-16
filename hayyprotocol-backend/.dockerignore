@@ -1,4 +1,4 @@
-# Docker ignore file for StackLend Backend
+# Docker ignore file for HayyProtocol Backend
 # Prevent unnecessary files from being copied into Docker image
 
 # Dependencies

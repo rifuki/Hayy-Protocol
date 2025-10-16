@@ -7,7 +7,7 @@
 
 import crypto from "crypto";
 
-console.log('🔑 Generating Keypairs for StackLend Relayer\n');
+console.log('🔑 Generating Keypairs for HayyProtocol Relayer\n');
 console.log('=' .repeat(60));
 
 // Generate Stacks Admin Keypair

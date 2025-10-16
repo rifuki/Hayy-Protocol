@@ -1,4 +1,4 @@
-// API client for StackLend backend
+// API client for HayyProtocol backend
 // Use environment variable for API base URL (for different environments)
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
 
@@ -56,7 +56,7 @@ export interface WithdrawResponse {
   };
 }
 
-class StackLendAPI {
+class HayyProtocolAPI {
   private baseUrl: string;
 
   constructor(baseUrl: string = API_BASE_URL) {
@@ -110,5 +110,5 @@ class StackLendAPI {
   }
 }
 
-export const stackLendAPI = new StackLendAPI();
-export default stackLendAPI;
+export const hayyProtocolAPI = new HayyProtocolAPI();
+export default hayyProtocolAPI;

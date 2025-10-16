@@ -1,8 +1,8 @@
-# StackLend Protocol 🚀
+# HayyProtocol Protocol 🚀
 
 **Cross-Chain Lending Protocol between Stacks and EVM Networks**
 
-StackLend is a revolutionary decentralized finance (DeFi) protocol that enables seamless cross-chain lending by using STX as collateral on Stacks blockchain to borrow tokens on EVM-compatible networks. The protocol bridges Bitcoin's security through Stacks with the liquidity of Ethereum-based ecosystems.
+HayyProtocol is a revolutionary decentralized finance (DeFi) protocol that enables seamless cross-chain lending by using STX as collateral on Stacks blockchain to borrow tokens on EVM-compatible networks. The protocol bridges Bitcoin's security through Stacks with the liquidity of Ethereum-based ecosystems.
 
 ## 🌟 Features
 
@@ -31,10 +31,10 @@ graph TB
 
 ### Components
 
-1. **Frontend (`stacklend-fe`)**: React-based user interface with Stacks and EVM wallet integration
-2. **Stacks Contracts (`stacklend-stacks`)**: Clarity smart contracts for collateral management
-3. **EVM Contracts (`stacklend-evm`)**: Solidity contracts for token borrowing and lending
-4. **Relayer (`stacklend-relayer`)**: Node.js service for cross-chain event processing
+1. **Frontend (`hayyprotocol-fe`)**: React-based user interface with Stacks and EVM wallet integration
+2. **Stacks Contracts (`hayyprotocol-stacks`)**: Clarity smart contracts for collateral management
+3. **EVM Contracts (`hayyprotocol-evm`)**: Solidity contracts for token borrowing and lending
+4. **Relayer (`hayyprotocol-relayer`)**: Node.js service for cross-chain event processing
 
 ## 📋 Contract Addresses
 
@@ -73,28 +73,28 @@ graph TB
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/xfajarr/stacklend.git
-   cd stacklend
+   git clone https://github.com/xfajarr/hayyprotocol.git
+   cd hayyprotocol
    ```
 
 2. **Install dependencies for each component**
    ```bash
    # Frontend
-   cd stacklend-fe
+   cd hayyprotocol-fe
    npm install
    
    # Relayer
-   cd ../stacklend-relayer
+   cd ../hayyprotocol-relayer
    npm install
    
    # Stacks contracts (optional, for development)
-   cd ../stacklend-stacks
+   cd ../hayyprotocol-stacks
    npm install
    ```
 
 3. **Configure environment variables**
    ```bash
-   # In stacklend-relayer/
+   # In hayyprotocol-relayer/
    cp .env.example .env
    # Edit .env with your RPC URLs and private keys
    ```
@@ -102,11 +102,11 @@ graph TB
 4. **Start the development servers**
    ```bash
    # Terminal 1: Start relayer
-   cd stacklend-relayer
+   cd hayyprotocol-relayer
    npm start
    
    # Terminal 2: Start frontend
-   cd stacklend-fe
+   cd hayyprotocol-fe
    npm run dev
    ```
 
@@ -127,7 +127,7 @@ graph TB
 ### Frontend Development
 
 ```bash
-cd stacklend-fe
+cd hayyprotocol-fe
 npm run dev        # Start development server
 npm run build      # Build for production
 npm run lint       # Run linting
@@ -137,7 +137,7 @@ npm run lint       # Run linting
 
 **Stacks Contracts:**
 ```bash
-cd stacklend-stacks
+cd hayyprotocol-stacks
 clarinet check     # Check contract syntax
 clarinet test      # Run tests
 clarinet deploy    # Deploy to testnet
@@ -145,7 +145,7 @@ clarinet deploy    # Deploy to testnet
 
 **EVM Contracts:**
 ```bash
-cd stacklend-evm
+cd hayyprotocol-evm
 forge build        # Compile contracts
 forge test         # Run tests
 forge script script/Deploy.s.sol --rpc-url $RPC_URL --broadcast  # Deploy
@@ -154,7 +154,7 @@ forge script script/Deploy.s.sol --rpc-url $RPC_URL --broadcast  # Deploy
 ### Relayer Development
 
 ```bash
-cd stacklend-relayer
+cd hayyprotocol-relayer
 npm run dev        # Start with hot reload
 npm test           # Run tests
 npm run docker     # Build Docker image
@@ -186,10 +186,10 @@ npm run docker     # Build Docker image
 
 ## 📚 Documentation
 
-- [Frontend Integration Guide](./stacklend-fe/STACKS_INTEGRATION_README.md)
-- [Stacks Contract Documentation](./stacklend-stacks/STACKS_INTEGRATION.md)
-- [EVM Deployment Guide](./stacklend-evm/DEPLOYMENT.md)
-- [Relayer Setup Guide](./stacklend-relayer/README.md)
+- [Frontend Integration Guide](./hayyprotocol-fe/STACKS_INTEGRATION_README.md)
+- [Stacks Contract Documentation](./hayyprotocol-stacks/STACKS_INTEGRATION.md)
+- [EVM Deployment Guide](./hayyprotocol-evm/DEPLOYMENT.md)
+- [Relayer Setup Guide](./hayyprotocol-relayer/README.md)
 
 ## 🤝 Contributing
 

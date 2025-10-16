@@ -1,9 +1,9 @@
-module stacklend::borrow_controller;
+module hayyprotocol::borrow_controller;
 
 use sui::{coin::{Self, Coin}, dynamic_field, event};
-use stacklend::mock_sbtc::MOCK_SBTC;
-use stacklend::mock_usdc::MOCK_USDC;
-use stacklend::usdc_lending_pool::{Self, UsdcLendingPool};
+use hayyprotocol::mock_sbtc::MOCK_SBTC;
+use hayyprotocol::mock_usdc::MOCK_USDC;
+use hayyprotocol::usdc_lending_pool::{Self, UsdcLendingPool};
 
 // ========================================
 //  ERROR CODES

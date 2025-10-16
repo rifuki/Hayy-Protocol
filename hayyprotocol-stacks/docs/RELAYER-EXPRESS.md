@@ -37,7 +37,7 @@ Minimal `package.json`:
 
 ```json
 {
-  "name": "stacklend-relayer-express",
+  "name": "hayyprotocol-relayer-express",
   "version": "0.1.0",
   "private": true,
   "type": "module",

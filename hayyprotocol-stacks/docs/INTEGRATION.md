@@ -1,4 +1,4 @@
-# StackLend Cross-Chain MVP Integration Guide
+# HayyProtocol Cross-Chain MVP Integration Guide
 
 This guide shows how to integrate the Clarity contracts from this repo with a simple EVM setup (Base Sepolia) so users can borrow EVM tokens using real STX testnet collateral.
 

@@ -93,7 +93,7 @@ const Lend = () => {
 
   return (
     <>
-      <SEO title="StackLend — Lend" description="Supply assets and earn yield." canonical="/lend" />
+      <SEO title="HayyProtocol — Lend" description="Supply assets and earn yield." canonical="/lend" />
       <section className="space-y-6 animate-enter">
         <header>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Lend Your Assets</h1>

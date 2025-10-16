@@ -129,7 +129,7 @@ stx deploy_contract \
 
 3. **Update Frontend Config**
 
-   Edit `stacklend-fe/src/lib/config.ts`:
+   Edit `hayyprotocol-fe/src/lib/config.ts`:
    ```typescript
    testnet: {
      COLLATERAL: {

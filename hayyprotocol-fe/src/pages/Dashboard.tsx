@@ -41,7 +41,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <SEO title="StackLend — Dashboard" description="Overview of your collateral, borrows and health on StackLend Sui." canonical="/" />
+      <SEO title="HayyProtocol — Dashboard" description="Overview of your collateral, borrows and health on HayyProtocol Sui." canonical="/" />
       <section className="space-y-6 animate-enter">
         <header>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Portfolio</h1>

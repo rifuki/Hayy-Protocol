@@ -1,6 +1,6 @@
-# StackLend - Stacks Contracts
+# HayyProtocol - Stacks Contracts
 
-Stacks-side contracts for StackLend cross-chain lending protocol (Stacks <-> Sui).
+Stacks-side contracts for HayyProtocol cross-chain lending protocol (Stacks <-> Sui).
 
 ## Architecture Overview
 
@@ -213,7 +213,7 @@ The relayer must:
 4. ✅ Have admin privileges on both chains
 5. ✅ Verify state consistency before unlocking collateral
 
-See `/stacklend-relayer` for implementation.
+See `/hayyprotocol-relayer` for implementation.
 
 ---
 

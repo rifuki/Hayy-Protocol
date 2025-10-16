@@ -12,7 +12,7 @@ import { STACKS_TESTNET, STACKS_MAINNET } from '@stacks/network';
 import { NETWORK_CONFIG, getCurrentNetworkConfig, PROTOCOL_CONSTANTS } from './config';
 
 // Contract configuration - uses config.ts for addresses
-export const STACKLEND_CONTRACTS = getCurrentNetworkConfig();
+export const HAYYPROTOCOL_CONTRACTS = getCurrentNetworkConfig();
 
 // Use appropriate network based on configuration
 const NETWORK = NETWORK_CONFIG.NETWORK === 'mainnet' 
@@ -81,8 +81,8 @@ export async function getCollateralBalance(userAddress: string): Promise<number>
     }
 
     const result = await callReadOnly(
-      STACKLEND_CONTRACTS.COLLATERAL.address,
-      STACKLEND_CONTRACTS.COLLATERAL.name,
+      HAYYPROTOCOL_CONTRACTS.COLLATERAL.address,
+      HAYYPROTOCOL_CONTRACTS.COLLATERAL.name,
       'get-collateral',
       [standardPrincipalCV(userAddress)]
     );
@@ -107,8 +107,8 @@ export async function getBorrowedTotal(userAddress: string): Promise<number> {
     }
 
     const result = await callReadOnly(
-      STACKLEND_CONTRACTS.COLLATERAL.address,
-      STACKLEND_CONTRACTS.COLLATERAL.name,
+      HAYYPROTOCOL_CONTRACTS.COLLATERAL.address,
+      HAYYPROTOCOL_CONTRACTS.COLLATERAL.name,
       'get-borrowed-total',
       [standardPrincipalCV(userAddress)]
     );
@@ -127,8 +127,8 @@ export async function getBorrowedTotal(userAddress: string): Promise<number> {
 export async function getTotalCollateral(): Promise<number> {
   try {
     const result = await callReadOnly(
-      STACKLEND_CONTRACTS.COLLATERAL.address,
-      STACKLEND_CONTRACTS.COLLATERAL.name,
+      HAYYPROTOCOL_CONTRACTS.COLLATERAL.address,
+      HAYYPROTOCOL_CONTRACTS.COLLATERAL.name,
       'get-total-collateral'
     );
     
@@ -146,8 +146,8 @@ export async function getTotalCollateral(): Promise<number> {
 export async function getTotalBorrowed(): Promise<number> {
   try {
     const result = await callReadOnly(
-      STACKLEND_CONTRACTS.COLLATERAL.address,
-      STACKLEND_CONTRACTS.COLLATERAL.name,
+      HAYYPROTOCOL_CONTRACTS.COLLATERAL.address,
+      HAYYPROTOCOL_CONTRACTS.COLLATERAL.name,
       'get-total-borrowed'
     );
     
@@ -171,8 +171,8 @@ export async function getLendBalance(userAddress: string): Promise<number> {
     }
 
     const result = await callReadOnly(
-      STACKLEND_CONTRACTS.LENDING.address,
-      STACKLEND_CONTRACTS.LENDING.name,
+      HAYYPROTOCOL_CONTRACTS.LENDING.address,
+      HAYYPROTOCOL_CONTRACTS.LENDING.name,
       'get-lend-balance',
       [standardPrincipalCV(userAddress)]
     );
@@ -191,8 +191,8 @@ export async function getLendBalance(userAddress: string): Promise<number> {
 export async function getTotalLend(): Promise<number> {
   try {
     const result = await callReadOnly(
-      STACKLEND_CONTRACTS.LENDING.address,
-      STACKLEND_CONTRACTS.LENDING.name,
+      HAYYPROTOCOL_CONTRACTS.LENDING.address,
+      HAYYPROTOCOL_CONTRACTS.LENDING.name,
       'get-total-lend'
     );
     
@@ -210,8 +210,8 @@ export async function getTotalLend(): Promise<number> {
 export async function getLendApyBps(): Promise<number> {
   try {
     const result = await callReadOnly(
-      STACKLEND_CONTRACTS.LENDING.address,
-      STACKLEND_CONTRACTS.LENDING.name,
+      HAYYPROTOCOL_CONTRACTS.LENDING.address,
+      HAYYPROTOCOL_CONTRACTS.LENDING.name,
       'get-lend-apy-bps'
     );
     
@@ -235,8 +235,8 @@ export async function getBorrowTokenMeta(tokenId: string): Promise<TokenMetadata
     }
 
     const result = await callReadOnly(
-      STACKLEND_CONTRACTS.COLLATERAL.address,
-      STACKLEND_CONTRACTS.COLLATERAL.name,
+      HAYYPROTOCOL_CONTRACTS.COLLATERAL.address,
+      HAYYPROTOCOL_CONTRACTS.COLLATERAL.name,
       'get-borrow-token-meta',
       [stringAsciiCV(tokenId)]
     );
@@ -293,8 +293,8 @@ export async function getBorrowedAmount(userAddress: string, tokenId: string): P
 
     // First check if token is registered by getting the token code
     const tokenCodeResult = await callReadOnly(
-      STACKLEND_CONTRACTS.COLLATERAL.address,
-      STACKLEND_CONTRACTS.COLLATERAL.name,
+      HAYYPROTOCOL_CONTRACTS.COLLATERAL.address,
+      HAYYPROTOCOL_CONTRACTS.COLLATERAL.name,
       'token-code-of',
       [stringAsciiCV(tokenId)]
     );
@@ -314,8 +314,8 @@ export async function getBorrowedAmount(userAddress: string, tokenId: string): P
     
     // Then get the borrowed amount using the token code
     const result = await callReadOnly(
-      STACKLEND_CONTRACTS.COLLATERAL.address,
-      STACKLEND_CONTRACTS.COLLATERAL.name,
+      HAYYPROTOCOL_CONTRACTS.COLLATERAL.address,
+      HAYYPROTOCOL_CONTRACTS.COLLATERAL.name,
       'get-borrowed',
       [standardPrincipalCV(userAddress), uintCV(Number(tokenCode))]
     );

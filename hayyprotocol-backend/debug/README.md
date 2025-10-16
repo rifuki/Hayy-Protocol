@@ -1,6 +1,6 @@
 # Debug & Testing Scripts
 
-Utility scripts untuk debugging dan testing StackLend backend.
+Utility scripts untuk debugging dan testing HayyProtocol backend.
 
 ## 📁 Available Scripts
 

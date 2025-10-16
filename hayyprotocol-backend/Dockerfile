@@ -1,4 +1,4 @@
-# StackLend Backend - Production Dockerfile
+# HayyProtocol Backend - Production Dockerfile
 # Uses Bun for fast performance
 
 FROM oven/bun:1.2-alpine AS base

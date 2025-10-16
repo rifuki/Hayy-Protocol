@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "stacklend-relayer",
+      "name": "hayyprotocol-relayer",
       "dependencies": {
         "@hono/node-server": "^1.19.5",
         "@mysten/sui.js": "^0.54.1",

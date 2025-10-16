@@ -16,7 +16,7 @@ import { useSTXPosition } from "@/hooks/use-stx-position";
 import { PRICES_USD } from "@/data/tokens";
 import {
   depositCollateral,
-  STACKLEND_CONTRACTS,
+  HAYYPROTOCOL_CONTRACTS,
 } from "@/lib/stacks-transactions";
 import { toast } from "@/hooks/use-toast";
 import { Loader2, Coins, ArrowRightLeft, Wallet, ArrowUpDown } from "lucide-react";
@@ -385,7 +385,7 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
             <div className="text-xs text-gray-500 space-y-1">
               <p>
                 <strong>Contract:</strong>{" "}
-                {STACKLEND_CONTRACTS.COLLATERAL.address}
+                {HAYYPROTOCOL_CONTRACTS.COLLATERAL.address}
               </p>
               <p>
                 <strong>Functions:</strong> deposit-collateral,

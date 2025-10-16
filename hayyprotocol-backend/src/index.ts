@@ -12,7 +12,7 @@ const app = new Hono();
 
 // Enable CORS
 app.use('/*', cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:8080', 'http://localhost:8081', 'https://stacklend.vercel.app'],
+  origin: ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:8080', 'http://localhost:8081', 'https://hayyprotocol.vercel.app'],
   allowHeaders: ['Content-Type', 'Authorization'],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 }));
@@ -49,11 +49,11 @@ process.on('SIGTERM', () => {
 
 const port = config.PORT || 3001;
 
-logger.info(`🚀 StackLend API Server starting on http://localhost:${port}`);
+logger.info(`🚀 HayyProtocol API Server starting on http://localhost:${port}`);
 
 serve({
   fetch: app.fetch,
   port: port,
 }, (info) => {
-  logger.info(`✅ StackLend API Server running on http://localhost:${info.port}`);
+  logger.info(`✅ HayyProtocol API Server running on http://localhost:${info.port}`);
 });

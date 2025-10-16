@@ -1,6 +1,6 @@
 /**
  * Stacks Contract Configuration
- * StackLend - Collateral Management on Stacks
+ * HayyProtocol - Collateral Management on Stacks
  */
 
 export const STACKS_CONFIG = {

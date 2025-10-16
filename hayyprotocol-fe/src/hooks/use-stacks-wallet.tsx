@@ -58,7 +58,7 @@ export const useStacksWallet = () => {
     try {
       await authenticate({
         appDetails: {
-          name: 'StackLend',
+          name: 'HayyProtocol',
           icon: window.location.origin + '/favicon.ico',
         },
         redirectTo: '/',

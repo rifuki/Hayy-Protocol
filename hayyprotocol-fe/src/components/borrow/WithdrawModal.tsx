@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { PRICES_USD } from "@/data/tokens";
-import { stackLendAPI } from "@/lib/api";
+import { hayyProtocolAPI } from "@/lib/api";
 
 interface WithdrawModalProps {
   open: boolean;
@@ -38,7 +38,7 @@ export const WithdrawModal = ({
     setError("");
 
     try {
-      const result = await stackLendAPI.withdraw({
+      const result = await hayyProtocolAPI.withdraw({
         suiAddress,
         amount: amountNum
       });

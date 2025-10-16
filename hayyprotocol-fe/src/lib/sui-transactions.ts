@@ -1,5 +1,5 @@
 /**
- * Sui transaction functions for StackLend
+ * Sui transaction functions for HayyProtocol
  * Handles borrow, repay, and collateral operations on Sui blockchain
  */
 

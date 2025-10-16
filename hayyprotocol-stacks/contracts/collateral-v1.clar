@@ -1,4 +1,4 @@
-;; StackLend Collateral Contract v1
+;; HayyProtocol Collateral Contract v1
 ;; For Stacks <-> Sui Cross-Chain Lending
 ;; This contract ONLY manages STX collateral on Stacks
 ;; All borrowing/lending happens on Sui chain

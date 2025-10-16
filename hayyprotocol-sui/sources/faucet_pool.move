@@ -1,8 +1,8 @@
-module stacklend::faucet_pool;
+module hayyprotocol::faucet_pool;
 
 use sui::{coin::{Self, TreasuryCap}, event, table::{Self, Table}};
-use stacklend::mock_usdc::MOCK_USDC;
-use stacklend::mock_sbtc::MOCK_SBTC;
+use hayyprotocol::mock_usdc::MOCK_USDC;
+use hayyprotocol::mock_sbtc::MOCK_SBTC;
 
 // ========================================
 //  ERROR CODES

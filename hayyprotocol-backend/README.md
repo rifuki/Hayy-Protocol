@@ -1,6 +1,6 @@
-# StackLend Backend (Relayer + API Server)
+# HayyProtocol Backend (Relayer + API Server)
 
-Cross-chain relayer and API server for StackLend protocol that bridges STX collateral between Stacks and Sui blockchains.
+Cross-chain relayer and API server for HayyProtocol protocol that bridges STX collateral between Stacks and Sui blockchains.
 
 ## 🚀 Quick Start
 
@@ -182,7 +182,7 @@ Edit `address-mapping.json` to map Stacks addresses to Sui addresses:
 
 ```bash
 # Build image
-docker build -t stacklend-backend:latest .
+docker build -t hayyprotocol-backend:latest .
 
 # Run with docker-compose
 docker-compose up -d
@@ -216,7 +216,7 @@ docker-compose down
    scp relayer-state.json user@vps:/path/to/hayyprotocol-backend/
 
    # On VPS, import state into Docker volume
-   docker run --rm -v stacklend-backend_relayer-data:/data \
+   docker run --rm -v hayyprotocol-backend_relayer-data:/data \
      -v $(pwd)/relayer-state.json:/relayer-state.json \
      alpine cp /relayer-state.json /data/relayer-state.json
 
@@ -227,17 +227,17 @@ docker-compose down
 3. **Option C: Set starting block manually**
    ```bash
    # Edit state file in Docker volume
-   docker run --rm -v stacklend-backend_relayer-data:/data \
+   docker run --rm -v hayyprotocol-backend_relayer-data:/data \
      alpine sh -c 'echo "{\"lastStacksBlock\":3602954,\"processedEvents\":{},\"priceCache\":{\"stxUsd\":0.5,\"sbtcUsd\":65000,\"lastUpdate\":0},\"addressMappings\":{}}" > /data/relayer-state.json'
    ```
 
 **Check current state in Docker:**
 ```bash
 # View state file
-docker exec stacklend-backend cat /app/data/relayer-state.json
+docker exec hayyprotocol-backend cat /app/data/relayer-state.json
 
 # Or access volume directly
-docker run --rm -v stacklend-backend_relayer-data:/data alpine cat /data/relayer-state.json
+docker run --rm -v hayyprotocol-backend_relayer-data:/data alpine cat /data/relayer-state.json
 ```
 
 **Event Duplication Protection:**
@@ -313,7 +313,7 @@ node debug/test-sui-call.js
 docker-compose down
 
 # Remove old volume
-docker volume rm stacklend-backend_relayer-data
+docker volume rm hayyprotocol-backend_relayer-data
 
 # Rebuild and restart (will create new volume with correct permissions)
 docker-compose up -d --build
@@ -339,13 +339,13 @@ Check `relayer-state.json` for:
 npm run dev  # Logs to console
 
 # PM2
-pm2 logs stacklend-relayer
+pm2 logs hayyprotocol-relayer
 
 # Docker
 docker-compose logs -f
 
 # systemd
-journalctl -u stacklend-relayer -f
+journalctl -u hayyprotocol-relayer -f
 ```
 
 ## 🔐 Security
@@ -371,17 +371,17 @@ journalctl -u stacklend-relayer -f
 ### Option 1: PM2 (Recommended)
 ```bash
 npm install -g pm2
-pm2 start npm --name "stacklend-relayer" -- start
+pm2 start npm --name "hayyprotocol-relayer" -- start
 pm2 save
 pm2 startup
 ```
 
 ### Option 2: systemd
-Create `/etc/systemd/system/stacklend-relayer.service`:
+Create `/etc/systemd/system/hayyprotocol-relayer.service`:
 
 ```ini
 [Unit]
-Description=StackLend Relayer
+Description=HayyProtocol Relayer
 After=network.target
 
 [Service]
@@ -399,9 +399,9 @@ WantedBy=multi-user.target
 
 Then:
 ```bash
-sudo systemctl enable stacklend-relayer
-sudo systemctl start stacklend-relayer
-sudo systemctl status stacklend-relayer
+sudo systemctl enable hayyprotocol-relayer
+sudo systemctl start hayyprotocol-relayer
+sudo systemctl status hayyprotocol-relayer
 ```
 
 ### Option 3: Docker

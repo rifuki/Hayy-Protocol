@@ -1,10 +1,10 @@
 services:
-  # StackLend Backend (Relayer + API Server)
+  # HayyProtocol Backend (Relayer + API Server)
   backend:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: stacklend-backend
+    container_name: hayyprotocol-backend
     restart: unless-stopped
     ports:
       - "3001:3001"
@@ -19,7 +19,7 @@ services:
       # Mount .env file (alternative to environment variables)
       # - ./.env:/app/.env:ro
     networks:
-      - stacklend-network
+      - hayyprotocol-network
     healthcheck:
       test: ["CMD", "bun", "run", "-e", "fetch('http://localhost:3001/api/health').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"]
       interval: 30s
@@ -37,5 +37,5 @@ volumes:
     driver: local
 
 networks:
-  stacklend-network:
+  hayyprotocol-network:
     driver: bridge

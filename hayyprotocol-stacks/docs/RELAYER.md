@@ -86,7 +86,7 @@ Example `package.json`:
 
 ```json
 {
-  "name": "stacklend-relayer",
+  "name": "hayyprotocol-relayer",
   "version": "0.1.0",
   "type": "module",
   "private": true,
@@ -246,17 +246,17 @@ Tips
 
 ## 9) Deployment options
 
-- PM2: `pm2 start src/index.js --name stacklend-relayer`
+- PM2: `pm2 start src/index.js --name hayyprotocol-relayer`
 - systemd unit (example):
 
 ```ini
 [Unit]
-Description=StackLend Relayer
+Description=HayyProtocol Relayer
 After=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=/opt/stacklend-relayer
+WorkingDirectory=/opt/hayyprotocol-relayer
 Environment=NODE_ENV=production
 ExecStart=/usr/bin/node src/index.js
 Restart=always

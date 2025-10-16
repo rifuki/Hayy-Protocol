@@ -1,7 +1,7 @@
 import { BORROW_REGISTRY_ID } from "@/constants/contract/sui";
 import { useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
 import { useQuery } from "@tanstack/react-query";
-import { stackLendAPI } from "@/lib/api";
+import { hayyProtocolAPI } from "@/lib/api";
 
 export interface BorrowPosition {
   borrower: string;
@@ -31,7 +31,7 @@ export function useBorrowPosition() {
         console.log("Trying API lookup for address:", currentAccount.address);
         
         try {
-          const apiResponse = await stackLendAPI.getPositionBySuiAddress(currentAccount.address);
+          const apiResponse = await hayyProtocolAPI.getPositionBySuiAddress(currentAccount.address);
           
           if (apiResponse.success && apiResponse.position) {
             console.log("Found position via API:", apiResponse.position);

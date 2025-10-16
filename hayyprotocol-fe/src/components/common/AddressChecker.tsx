@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AlertTriangle, CheckCircle, RefreshCw, ExternalLink } from 'lucide-react';
 import { useCurrentAccount } from '@mysten/dapp-kit';
-import { stackLendAPI, type SuggestResponse } from '../../lib/api';
+import { hayyProtocolAPI, type SuggestResponse } from '../../lib/api';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
@@ -27,7 +27,7 @@ export function AddressChecker({ onAddressSuggestion }: AddressCheckerProps) {
     setError(null);
 
     try {
-      const response = await stackLendAPI.suggestForSuiAddress(currentAccount.address);
+      const response = await hayyProtocolAPI.suggestForSuiAddress(currentAccount.address);
       setResult(response);
       
       if (response.suggestions && response.suggestions.length > 0) {

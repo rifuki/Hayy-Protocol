@@ -176,7 +176,7 @@ export function setupAPIRoutes(app: Hono) {
   app.get('/api/health', (c) => {
     return c.json({
       success: true,
-      message: 'StackLend API is running',
+      message: 'HayyProtocol API is running',
       timestamp: new Date().toISOString()
     });
   });

@@ -1,4 +1,4 @@
-module stacklend::mock_sbtc;
+module hayyprotocol::mock_sbtc;
 
 use sui::{coin::{Self, Coin, TreasuryCap}, url};
 

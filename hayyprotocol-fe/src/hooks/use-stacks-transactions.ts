@@ -8,7 +8,7 @@ import {
   withdrawLending,
   initAdmin,
   addToken,
-  STACKLEND_CONTRACTS
+  HAYYPROTOCOL_CONTRACTS
 } from '@/lib/stacks-transactions';
 import { STXToMicroSTX } from '@/lib/stacks-contract-reader';
 import { FinishedTxData } from '@stacks/connect';

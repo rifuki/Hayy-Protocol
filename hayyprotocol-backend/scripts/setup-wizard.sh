@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# StackLend Relayer Setup Wizard
+# HayyProtocol Relayer Setup Wizard
 # Run: bash scripts/setup-wizard.sh
 
 set -e
 
-echo "🚀 StackLend Relayer Setup Wizard"
+echo "🚀 HayyProtocol Relayer Setup Wizard"
 echo "=================================="
 echo ""
 

@@ -1,4 +1,4 @@
-module stacklend::mock_usdc;
+module hayyprotocol::mock_usdc;
 
 use sui::{coin::{Self, Coin, TreasuryCap}, url};
 

@@ -16,8 +16,8 @@ const Faucet = () => {
   return (
     <>
       <SEO
-        title="StackLend — Test Faucet"
-        description="Get test tokens for testing StackLend protocol on Sui testnet"
+        title="HayyProtocol — Test Faucet"
+        description="Get test tokens for testing HayyProtocol protocol on Sui testnet"
         canonical="/faucet"
       />
 
