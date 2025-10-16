@@ -35,11 +35,11 @@ export function useCollateralStatus(
       }
 
       try {
-        // Get API base URL from environment or use default
-        const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+        // Get API base URL from environment (already includes /api prefix)
+        const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
         
         const response = await fetch(
-          `${apiBaseUrl}/api/collateral-status/${stacksAddress}`,
+          `${apiBaseUrl}/collateral-status/${stacksAddress}`,
           {
             method: 'GET',
             headers: {
@@ -67,24 +67,32 @@ export function useCollateralStatus(
     refetchInterval: (query) => {
       const data = query.state.data;
       
-      // Stop polling once registered
+      // Stop polling once registered - IMPORTANT!
       if (data?.status === 'registered') {
+        console.log('✅ Stopping polling - collateral registered');
         return false;
       }
       
-      // Stop polling on error after a while
+      // Stop polling on error
       if (data?.status === 'error') {
+        console.log('❌ Stopping polling - error encountered');
+        return false;
+      }
+      
+      // Stop polling on invalid
+      if (data?.status === 'invalid') {
         return false;
       }
       
       // Poll every 2 seconds while pending
+      console.log('🔄 Polling for collateral status...');
       return 2000;
     },
     // Retry on network errors
-    retry: 3,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
-    // Force no cache to always get fresh data
-    staleTime: 0,
-    gcTime: 0,
+    retry: 2, // Reduce retry count
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
+    // Cache data to prevent excessive refetches
+    staleTime: 1000, // Consider data fresh for 1 second
+    gcTime: 30000, // Keep in cache for 30 seconds
   });
 }

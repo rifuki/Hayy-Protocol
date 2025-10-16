@@ -97,23 +97,29 @@ async function getStacksAddressFromSui(suiAddress: string): Promise<string | nul
 
 async function fetchPositionFromSui(suiAddress: string): Promise<Position | null> {
   try {
+    // Get the registry object to access its dynamic fields
     const registryObject = await suiClient.getObject({
       id: config.SUI_BORROW_REGISTRY_ID,
       options: { showContent: true }
     });
 
     if (!registryObject.data?.content || registryObject.data.content.dataType !== 'moveObject') {
+      logger.debug('Registry object not found or invalid');
       return null;
     }
 
-    const fields = (registryObject.data.content as any).fields;
+    const registryFields = (registryObject.data.content as any).fields;
     
-    if (!fields.id?.id) {
+    // Get dynamic fields parent ID
+    const parentId = registryFields.id?.id;
+    if (!parentId) {
+      logger.debug('No parent ID found in registry');
       return null;
     }
 
+    // Find user's position in dynamic fields
     const dynamicFields = await suiClient.getDynamicFields({
-      parentId: fields.id.id
+      parentId: parentId
     });
 
     const userField = dynamicFields.data.find(field => {
@@ -124,36 +130,57 @@ async function fetchPositionFromSui(suiAddress: string): Promise<Position | null
     });
 
     if (!userField?.objectId) {
+      logger.debug({ suiAddress }, 'No position found for user');
       return null;
     }
 
+    // Get the position object
     const userPosition = await suiClient.getObject({
       id: userField.objectId,
       options: { showContent: true }
     });
 
     if (!userPosition.data?.content || userPosition.data.content.dataType !== 'moveObject') {
+      logger.debug('Position object invalid');
       return null;
     }
 
-    const positionFields = (userPosition.data.content as any).fields.value;
+    // Access fields correctly: fields.value.fields (nested structure)
+    const positionContent = (userPosition.data.content as any).fields;
+    const positionFields = positionContent.value?.fields || positionContent.fields;
+    
+    logger.debug({ positionFields }, 'Position fields retrieved');
+    
+    // Parse fields with proper decimal conversion
+    const stxCollateral = parseInt(positionFields.stx_collateral_stacks || '0') / 1000000; // 6 decimals
+    const sbtcCollateral = parseInt(positionFields.sbtc_collateral_sui || positionFields.sbtc_collateral_stacks || '0') / 100000000; // 8 decimals
+    const usdcBorrowed = parseInt(positionFields.usdc_borrowed || '0') / 1000000; // 6 decimals
     
     return {
       suiAddress,
-      stxCollateral: parseInt(positionFields.stx_collateral_stacks || '0') / 1000000,
-      sbtcCollateral: parseInt(positionFields.sbtc_collateral_sui || '0') / 100000000,
-      usdcBorrowed: parseInt(positionFields.usdc_borrowed || '0') / 1000000,
-      isLiquidatable: false,
-      borrowPower: 0,
+      stxCollateral,
+      sbtcCollateral,
+      usdcBorrowed,
+      isLiquidatable: positionFields.is_liquidatable || false,
+      borrowPower: stxCollateral * 0.7, // 70% LTV
       objectId: userField.objectId
     };
   } catch (error) {
-    logger.error({ error }, 'Error fetching position from Sui');
+    logger.error({ error, suiAddress }, 'Error fetching position from Sui');
     return null;
   }
 }
 
 export function setupAPIRoutes(app: Hono) {
+  // Health check endpoint
+  app.get('/api/health', (c) => {
+    return c.json({
+      success: true,
+      message: 'StackLend API is running',
+      timestamp: new Date().toISOString()
+    });
+  });
+
   // Get position by Sui address
   app.get('/api/position/:address', async (c) => {
     try {

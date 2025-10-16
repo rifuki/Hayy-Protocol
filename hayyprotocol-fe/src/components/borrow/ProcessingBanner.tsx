@@ -7,33 +7,43 @@ import { useCollateralStatus } from '@/features/common/hooks/useCollateralStatus
 
 interface ProcessingBannerProps {
   stacksAddress: string | null | undefined;
-  onComplete?: () => void;
+  initialCollateral?: number; // STX collateral amount BEFORE this deposit
+  onComplete?: (newCollateral?: number) => void;
   autoHideAfter?: number; // milliseconds, default 5000
 }
 
 export function ProcessingBanner({ 
-  stacksAddress, 
+  stacksAddress,
+  initialCollateral = 0,
   onComplete,
   autoHideAfter = 5000 
 }: ProcessingBannerProps) {
   const [hidden, setHidden] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [hasDetectedIncrease, setHasDetectedIncrease] = useState(false);
   
   const { 
     data: status, 
     isLoading 
   } = useCollateralStatus(stacksAddress, !hidden);
 
-  // Auto-hide after success
+  // Auto-hide after success (when collateral increases beyond initial)
   useEffect(() => {
-    if (status?.status === 'registered') {
-      onComplete?.();
-      const timer = setTimeout(() => {
-        setHidden(true);
-      }, autoHideAfter);
-      return () => clearTimeout(timer);
+    if (status?.status === 'registered' && status?.collateral) {
+      const currentCollateral = status.collateral.stxAmount;
+      
+      // Check if collateral has increased beyond initial amount
+      // This means the NEW deposit has been processed!
+      if (currentCollateral > initialCollateral && !hasDetectedIncrease) {
+        setHasDetectedIncrease(true);
+        onComplete?.(currentCollateral);
+        const timer = setTimeout(() => {
+          setHidden(true);
+        }, autoHideAfter);
+        return () => clearTimeout(timer);
+      }
     }
-  }, [status?.status, onComplete, autoHideAfter]);
+  }, [status?.status, status?.collateral, initialCollateral, hasDetectedIncrease, onComplete, autoHideAfter]);
 
   // Animated progress bar
   useEffect(() => {

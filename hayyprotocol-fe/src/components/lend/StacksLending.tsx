@@ -39,6 +39,8 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [showProcessingBanner, setShowProcessingBanner] = useState(false);
   const [depositedStacksAddress, setDepositedStacksAddress] = useState<string | null>(null);
+  const [depositTxId, setDepositTxId] = useState<string | null>(null);
+  const [initialCollateral, setInitialCollateral] = useState<number>(0);
 
   // Clear amounts when disconnected
   useEffect(() => {
@@ -120,9 +122,13 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
             duration: 5000,
           });
           
-          // Clear input & show processing banner
+          // Save current collateral amount BEFORE this deposit
+          setInitialCollateral(stxPosition?.stxCollateral || 0);
+          
+          // Clear input & show processing banner for ALL deposits
           setCollateralAmount("");
           setDepositedStacksAddress(address);
+          setDepositTxId(data.txId || null);
           setShowProcessingBanner(true);
         },
         () => {
@@ -405,12 +411,22 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
         {showProcessingBanner && depositedStacksAddress && (
           <ProcessingBanner 
             stacksAddress={depositedStacksAddress}
-            onComplete={() => {
+            initialCollateral={initialCollateral}
+            onComplete={(newCollateral) => {
               // Refetch position data when registration complete
               refetchPosition();
+              
+              // Hide banner after completion
+              setShowProcessingBanner(false);
+              setDepositedStacksAddress(null);
+              setDepositTxId(null);
+              
+              // Calculate deposit amount
+              const depositAmount = (newCollateral || 0) - initialCollateral;
+              
               toast({
-                title: "🎉 Ready to Borrow!",
-                description: "Your collateral is registered. You can now borrow on Sui.",
+                title: "🎉 Collateral Registered!",
+                description: `+${depositAmount.toFixed(2)} STX added. Total: ${(newCollateral || 0).toFixed(2)} STX`,
                 duration: 5000,
               });
             }}
