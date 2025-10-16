@@ -16,13 +16,13 @@ import { useSTXPosition } from "@/hooks/use-stx-position";
 import { PRICES_USD } from "@/data/tokens";
 import {
   depositCollateral,
-  requestWithdraw,
   STACKLEND_CONTRACTS,
 } from "@/lib/stacks-transactions";
 import { toast } from "@/hooks/use-toast";
 import { Loader2, Coins, ArrowRightLeft, Wallet, ArrowUpDown } from "lucide-react";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { WithdrawModal } from "@/components/borrow/WithdrawModal";
+import { ProcessingBanner } from "@/components/borrow/ProcessingBanner";
 
 interface StacksLendingProps {
   className?: string;
@@ -34,17 +34,16 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
   const { position: stxPosition, loading: positionLoading, refetch: refetchPosition } = useSTXPosition();
 
   const [collateralAmount, setCollateralAmount] = useState("");
-  const [withdrawAmount, setWithdrawAmount] = useState("");
   const [suiAddress, setSuiAddress] = useState("");
   const [isDepositing, setIsDepositing] = useState(false);
-  const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [showProcessingBanner, setShowProcessingBanner] = useState(false);
+  const [depositedStacksAddress, setDepositedStacksAddress] = useState<string | null>(null);
 
   // Clear amounts when disconnected
   useEffect(() => {
     if (!isConnected) {
       setCollateralAmount("");
-      setWithdrawAmount("");
       setSuiAddress("");
     }
   }, [isConnected]);
@@ -114,12 +113,17 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
         microSTX,
         suiAddress,
         (data) => {
+          // Show success toast
           toast({
-            title: "Collateral Deposited Successfully!",
-            description: `${collateralAmount} STX deposited. Sui address: ${suiAddress.substring(0, 10)}... Transaction: ${data.txId}`,
-            duration: 10000,
+            title: "✅ Transaction Confirmed!",
+            description: `Deposit confirmed. Processing registration on Sui...`,
+            duration: 5000,
           });
+          
+          // Clear input & show processing banner
           setCollateralAmount("");
+          setDepositedStacksAddress(address);
+          setShowProcessingBanner(true);
         },
         () => {
           toast({
@@ -131,7 +135,7 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
       );
 
       toast({
-        title: "Transaction Submitted",
+        title: "🔄 Transaction Submitted",
         description:
           "Collateral deposit transaction initiated. Please confirm in your wallet.",
         duration: 5000,
@@ -145,68 +149,6 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
       });
     } finally {
       setIsDepositing(false);
-    }
-  };
-
-  const handleWithdrawCollateral = async () => {
-    if (!address) {
-      toast({
-        title: "Wallet Not Connected",
-        description: "Please connect your Stacks wallet",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!withdrawAmount || parseFloat(withdrawAmount) <= 0) {
-      toast({
-        title: "Invalid Amount",
-        description: "Please enter a valid withdrawal amount",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsWithdrawing(true);
-    try {
-      const microSTX = Math.floor(
-        parseFloat(withdrawAmount) * 1_000_000,
-      ).toString();
-
-      await requestWithdraw(
-        microSTX,
-        (data) => {
-          toast({
-            title: "Withdrawal Request Submitted!",
-            description: `Request for ${withdrawAmount} STX submitted. Relayer will process after Sui verification. Transaction: ${data.txId}`,
-            duration: 10000,
-          });
-          setWithdrawAmount("");
-        },
-        () => {
-          toast({
-            title: "Transaction Cancelled",
-            description: "Withdrawal request was cancelled by user",
-            variant: "default",
-          });
-        },
-      );
-
-      toast({
-        title: "Transaction Submitted",
-        description:
-          "Withdrawal transaction initiated. Please confirm in your wallet.",
-        duration: 5000,
-      });
-    } catch (error) {
-      console.error("Withdrawal error:", error);
-      toast({
-        title: "Withdrawal Failed",
-        description: error.message || "Failed to withdraw collateral",
-        variant: "destructive",
-      });
-    } finally {
-      setIsWithdrawing(false);
     }
   };
 
@@ -459,6 +401,22 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
+        {/* Processing Banner - Show after deposit */}
+        {showProcessingBanner && depositedStacksAddress && (
+          <ProcessingBanner 
+            stacksAddress={depositedStacksAddress}
+            onComplete={() => {
+              // Refetch position data when registration complete
+              refetchPosition();
+              toast({
+                title: "🎉 Ready to Borrow!",
+                description: "Your collateral is registered. You can now borrow on Sui.",
+                duration: 5000,
+              });
+            }}
+          />
+        )}
+
         {/* Wallet Status */}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
@@ -524,41 +482,6 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
                 </>
               ) : (
                 "Deposit Collateral"
-              )}
-            </Button>
-          </div>
-        </div>
-
-        {/* Request Withdrawal */}
-        <div className="space-y-3">
-          <Label htmlFor="withdraw" className="text-sm font-medium">
-            Request STX Withdrawal
-          </Label>
-          <p className="text-xs text-gray-500">
-            Withdrawal will be processed by relayer after Sui debt verification
-          </p>
-          <div className="space-y-2">
-            <Input
-              id="withdraw"
-              type="number"
-              placeholder="Enter STX amount to withdraw"
-              value={withdrawAmount}
-              onChange={(e) => setWithdrawAmount(e.target.value)}
-              disabled={isWithdrawing}
-            />
-            <Button
-              onClick={handleWithdrawCollateral}
-              variant="outline"
-              className="w-full"
-              disabled={isWithdrawing}
-            >
-              {isWithdrawing ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Requesting...
-                </>
-              ) : (
-                "Request Withdrawal"
               )}
             </Button>
           </div>

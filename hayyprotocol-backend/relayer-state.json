@@ -1,5 +1,5 @@
 {
-  "lastStacksBlock": 3602954,
+  "lastStacksBlock": 3604235,
   "processedEvents": {
     "0xfb5b436f4c8d455c9056718cbc44b643dc8e1eba281313ce154939cd54c801a9:deposit": {
       "txHash": "0xfb5b436f4c8d455c9056718cbc44b643dc8e1eba281313ce154939cd54c801a9",
@@ -179,6 +179,30 @@
       "txHash": "0x7ffae6e8dce50f61658800b9233407576d05cd16c430e05b5e89afec7ed6ad9a",
       "suiTxDigest": "H4hMhBambcVFzdNRYZMFiDzRtfzufEtp896VuC4iWAae",
       "timestamp": 1760552435449,
+      "status": "success"
+    },
+    "0x9e050413705083da10b1ff9764ea4fa11e0d6cd41251e5d8ce876fe3a53080e3:deposit": {
+      "txHash": "0x9e050413705083da10b1ff9764ea4fa11e0d6cd41251e5d8ce876fe3a53080e3",
+      "suiTxDigest": "DdiHLy28sFxumy6xj4aaGMw7XVUgamB7HZo9AQXxuAfF",
+      "timestamp": 1760592281795,
+      "status": "success"
+    },
+    "0x0a165923aa44bdee3e297c3e2fe63b13717caf5334fe663fc300d40f95139287:deposit": {
+      "txHash": "0x0a165923aa44bdee3e297c3e2fe63b13717caf5334fe663fc300d40f95139287",
+      "suiTxDigest": "B8GuKDw4Y7S3PfmJM2nYBcwLzMShWfcXZaop9358YEV8",
+      "timestamp": 1760592393220,
+      "status": "success"
+    },
+    "0x2ee1bb205d2354c7294232666b48656174aab170c8b2868faeb8f3f13dd30075:deposit": {
+      "txHash": "0x2ee1bb205d2354c7294232666b48656174aab170c8b2868faeb8f3f13dd30075",
+      "suiTxDigest": "7FBkYQMfWbmwxM26TtMcnXB9fNhgk8BsXmZR58KuaBrj",
+      "timestamp": 1760592762979,
+      "status": "success"
+    },
+    "0x248693ce8665c6bcd1f07a824ca50a6d044aada39c954c8475424c1143db64b8:deposit": {
+      "txHash": "0x248693ce8665c6bcd1f07a824ca50a6d044aada39c954c8475424c1143db64b8",
+      "suiTxDigest": "DE61eiRwDhmnn6ojinFTpwg4x7VwvsAj3KZLrUFh5NPw",
+      "timestamp": 1760592978506,
       "status": "success"
     }
   },

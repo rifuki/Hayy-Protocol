@@ -18,7 +18,7 @@ export const Header = () => {
             <Layers className="size-5" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold text-xl">StackLend</span>
+            <span className="font-bold text-xl">HayyProtocol</span>
             <span className="text-xs text-muted-foreground">Lend & Borrow on Stacks</span>
           </div>
         </div>
@@ -28,7 +28,6 @@ export const Header = () => {
           <NavLink to="/lend" className={navCls}>Lend</NavLink>
           <NavLink to="/borrow" className={navCls}>Borrow</NavLink>
           <NavLink to="/faucet" className={navCls}>Faucet</NavLink>
-          <NavLink to="/admin" className={navCls}>Admin</NavLink>
         </nav>
 
         <div className="flex items-center gap-2">

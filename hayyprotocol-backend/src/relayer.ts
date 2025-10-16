@@ -70,6 +70,10 @@ async function handleDepositEvent(event: StacksCollateralEvent): Promise<void> {
       valueUsd
     );
 
+    // 🚀 IMMEDIATELY notify API cache that registration is done!
+    const { markRecentRegistration } = await import('./routes/api.js');
+    markRecentRegistration(event.user, suiAddress, event.amount, suiTx.digest);
+
     // Mark as processed
     markEventProcessed(state, eventId, event.txId, suiTx.digest);
 
